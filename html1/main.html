@@ -1,0 +1,241 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<title></title>
+<link rel="stylesheet" type="text/css" href="style.css">
+<link rel="icon" href="favicon.ico">
+<script src="samples.js"></script>
+<script src="utils.js"></script>
+<!--框架必需start-->
+<link href="./libs/css/import_main.css" rel="stylesheet" type="text/css"/>
+<link href="./libs/skins/blue/style.css" rel="stylesheet" type="text/css" id="theme" themeColor="blue" positionTarget="positionContent"/>
+<link href="./skin/style.css" rel="stylesheet" type="text/css" id="skin"/>
+<script type="text/javascript" src="./libs/js/jquery.js"></script>
+<script type="text/javascript" src="./libs/js/language/cn.js"></script>
+<script type="text/javascript" src="./libs/js/main.js"></script>
+        <script type="text/javascript" src="./js/cn.js"></script>
+<!--框架必需end-->
+
+<!--弹窗组件start-->
+<script type="text/javascript" src="./libs/js/popup/drag.js"></script>
+<script type="text/javascript" src="./libs/js/popup/dialog.js"></script>
+<!--弹窗组件end-->
+
+<!--引入提示组件start-->
+<script type="text/javascript" src="./libs/js/popup/toast.js"></script>
+<script type="text/javascript" src="./libs/js/popup/notice.js"></script>
+<!--引入提示组件end-->
+
+<!--左侧导航start-->
+<script type="text/javascript" src="./libs/js/nav/menuNav.js"></script>
+<!--左侧导航end-->
+
+<!--信件箱start-->
+<link rel="stylesheet" type="text/css" href="./libs/skins/blue/msgbox.css" />
+<script type="text/javascript" src="./libs/js/popup/msgbox.js"></script>
+<!--信件箱end-->
+
+<style>
+	body{
+		width: 100%!important;
+		margin: 0;
+		padding:0;
+	}
+	/*修改小铃铛样式*/
+	.right_tip{
+		width: 60px;
+		height: 50px;
+		margin-left: 0;
+		cursor: pointer;
+	}
+	.tip_icon{
+		margin-top: 12px;
+	}
+	.tip_balloons{
+		margin-top: 5px;
+	}
+	.tip_toggle_content{
+		top: 50px;
+		right: -16px;
+	}
+	.tip_allcontent_win,
+	.tip_allcontent{
+		top: 0px;
+	}
+	.tip_icon{
+		background: url(skin/page_head_ico.png) 0 -60px no-repeat;
+	}
+	.tip_icon_win:hover .tip_icon{
+		background: url(skin/page_head_ico.png) 0 -60px no-repeat;
+	}
+	#positionContent{
+		float: left;
+		width: 250px;
+		height: 50px;
+		line-height: 50px;
+		/*color: #fff;*/
+		margin-left: 20px;
+	}
+</style>
+</head>
+<body>
+<div id="mainFrame">
+<!--头部与导航start-->
+<div id="hbox"></div>
+<!--头部与导航end-->
+<div id="mainFrame">
+			<table width="100%" cellpadding="0" cellspacing="0" class="table_border0">
+				<tr>
+					<!--左侧区域start-->
+					<td id="hideCon" class="ver01 ali01">
+						<div id="lbox">
+							<div id="lbox_topcenter">
+								<div class="LeftNav_title">
+									<b></b>
+									<div class="clear"></div>
+								</div>
+								<div class="logo_win">
+									<img src="skin/logo.png"/>
+									<p>舆情分析系统</p>
+								</div>
+							</div>
+							<div id="lbox_middlecenter">
+								<div id="lbox_middleleft">
+									<div id="lbox_middleright">
+										<div id="bs_left">
+
+
+											<div class="LeftNav_win">
+
+												<div class="stair_win" id="stair_win">
+													<img src="" alt="" />
+												</div>
+											</div>
+										</div>
+										<!--更改左侧栏的宽度需要修改id="bs_left"的样式-->
+									</div>
+								</div>
+							</div>
+							<div id="lbox_bottomcenter">
+								<div id="lbox_bottomleft">
+									<div id="lbox_bottomright">
+										<div class="lbox_foot"></div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</td>
+					<!--左侧区域end-->
+
+					<!--右侧区域start-->
+					<td class="ali01 ver01" width="100%">
+						<div id="rbox">
+							<div id="rbox_topcenter">
+								<div>
+									<span>您好，欢迎访问系统应用！</span>
+									<div id="positionContent">首页</div>
+									<ul>
+										
+										<li><b></b></li>
+										<li><a href="./sample_skin/demo/yq_80.html" target="frmright"><span class="icon_home">系统首页</span></a></li>
+										<li><b></b></li>
+										
+										<li><a href="./sample_skin/demo/yq_50.html" target="frmright"><span class="icon_user">个人中心</span></a></li>
+										
+										
+										<li><b></b></li>
+										<li><span class="icon_exit" onclick="top.Dialog.confirm('确定要退出系统吗',function(){window.location='/logout'});">退出系统</span></li>
+										<div class="clear"></div>
+									</ul>
+									<div class="clear"></div>
+								</div>
+							</div>
+							<div id="rbox_middlecenter">
+								<div id="rbox_middleleft">
+									<div id="rbox_middleright">
+										<div id="bs_right">
+											<IFRAME style="box-sizing: border-box; background: white;" height="100%" width="100%" frameBorder=0 id=frmright name=frmright src="./sample_skin/demo/yq_80.html" allowTransparency="true"></IFRAME>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div id="rbox_bottomcenter">
+								<div id="rbox_bottomleft">
+									<div id="rbox_bottomright">
+
+									</div>
+								</div>
+							</div>
+						</div>
+					</td>
+					<!--右侧区域end-->
+				</tr>
+			</table>
+		</div>
+
+
+</div>
+<!--尾部区域end-->
+
+<!--浏览器resize事件修正start-->
+<div id="resizeFix"></div>
+<!--浏览器resize事件修正end-->
+
+<!--窗口任务栏区域start-->
+<div id="dialogTask" class="dialogTaskBg" style="display:none;"></div>
+<!--窗口任务栏区域end-->
+
+<!--载进度条start-->
+<div class="progressBg" id="progress" style="display:none;"><div class="progressBar"></div></div>
+<!--载进度条end-->
+<!---->
+<script type="text/javascript">
+	var menuData=[
+	{ "id":"2", "parentId":"0", "name":"情感分析", "isParent": "true","backgroundPosition":"0px -32px","img":"./skin/topIcons/icon02.png","url":'./sample_skin/demo/yq_80.html',"target":"frmright"},
+     
+    { "id":"6", "parentId":"0", "name":"情感分析可视化", "isParent": "true","backgroundPosition":"0px-64px","img":"./skin/topIcons/icon06.png"}, 
+    { "id":"601", "parentId":"6", "name":"折线图", "url":"./sample_skin/demo/yq_61.html","target":"frmright","icon": "./skin/nav_icon_bg.png","backgroundPosition":"0px -128px"},
+	{ "id":"602", "parentId":"6", "name":"五级图", "url":"./sample_skin/demo/yq_62.html", "target":"frmright","icon": "./skin/nav_icon_bg.png","backgroundPosition":"0px -128px"},
+	{ "id":"603", "parentId":"6", "name":"柱状图", "url":"./sample_skin/demo/yq_63.html", "target":"frmright","icon": "./skin/nav_icon_bg.png","backgroundPosition":"0px -128px"},
+    { "id":"604", "parentId":"6", "name":"词云", "url":"./sample_skin/demo/yq_64.html", "target":"frmright","icon": "./skin/nav_icon_bg.png","backgroundPosition":"0px -128px"},   
+        
+	{ "id":"4", "parentId":"0", "name":"重点人物管理", "isParent": "true","backgroundPosition":"0px -64px","img":"./skin/topIcons/icon04.png"},
+	{ "id":"401", "parentId":"4", "name":"人物基本信息", "url":"./sample_skin/demo/yq_10.html", "target":"frmright","icon": "./skin/nav_icon_bg.png","backgroundPosition":"0px -128px"},
+	{ "id":"402", "parentId":"4", "name":"人物任职记录", "url":"./sample_skin/demo/yq_12.html", "target":"frmright","icon": "./skin/nav_icon_bg.png","backgroundPosition":"0px -128px"},
+	{ "id":"403", "parentId":"4", "name":"人物相关特征词", "url":"./sample_skin/demo/yq_14.html", "target":"frmright","icon": "./skin/nav_icon_bg.png","backgroundPosition":"0px -128px"},
+    { "id":"404", "parentId":"4", "name":"人物联系方式", "url":"./sample_skin/demo/yq_16.html", "target":"frmright","icon": "./skin/nav_icon_bg.png","backgroundPosition":"0px -128px"},
+
+	{ "id":"5", "parentId":"0", "name":"重点组织管理", "isParent": "true","backgroundPosition":"0px -96px","img":"./skin/topIcons/icon05.png"},
+	{ "id":"501", "parentId":"5", "name":"一级组织信息","url":"./sample_skin/demo/yq_20.html", "target":"frmright","icon": "./skin/nav_icon_bg.png","backgroundPosition":"0px -128px"},
+	{ "id":"502", "parentId":"5", "name":"二级组织信息","url":"./sample_skin/demo/yq_22.html", "target":"frmright","icon": "./skin/nav_icon_bg.png","backgroundPosition":"0px -128px"},
+	{ "id":"503", "parentId":"5", "name":"组织联系方式","url":"./sample_skin/demo/yq_24.html", "target":"frmright","icon": "./skin/nav_icon_bg.png","backgroundPosition":"0px -128px"},
+        
+    { "id":"3", "parentId":"0", "name":"重点国家管理", "isParent": "true","backgroundPosition":"0px -32px","img":"./skin/topIcons/icon03.png","url":'./sample_skin/demo/yq_30.html',"target":"frmright"},
+    
+    { "id":"7", "parentId":"0", "name":"新闻网站管理", "isParent": "true","backgroundPosition":"0px -32px","img":"./skin/topIcons/icon03.png","url":'./sample_skin/demo/yq_70.html',"target":"frmright"},
+    { "id":"8", "parentId":"0", "name":"重点事件管理", "isParent": "true","backgroundPosition":"0px -32px","img":"./skin/topIcons/icon03.png","url":'./sample_skin/demo/yq_71.html',"target":"frmright"},
+
+    
+	{ "id":"9", "parentId":"0", "name":"文本自动抽取", "isParent": "true","backgroundPosition":"0px -48px","img":"./skin/topIcons/icon04.png","target":"frmright","url":"./sample_skin/demo/yq_40.html", "target":"frmright","icon": "./skin/nav_icon_bg.png"},
+];
+
+var setting = {
+	data: {
+		simpleData: {
+			idKey: "id",
+			pIdKey: "parentId",
+			enable: true
+		},
+		key: {
+			children: "children"
+		}
+	}
+};
+$(function(){
+	initMenuNav(menuData,setting);
+})
+</script>
+</body>
+</html>

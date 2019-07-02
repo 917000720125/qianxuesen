@@ -1,0 +1,53 @@
+登陆:'/login' POST{userid:"",password:""}{"success":"yes"}
+注册:'/logup' POST{userid:"",password:"",qq_mail:""}{success:yes or no}
+注销:'/logout' POST{}{}
+用户信息:'/user_info POST{}{userid:"",permissions:"",name:"",sex:"",national:"",telephone:"",address:""}
+历史操作记录:'/history POST{}{obj:"",typ:"",time:""}
+
+
+主要信息查询
+人物基本信息查询:'/t1_1_s' GET{} 返回全部人物信息包括别名
+        {'cno': '',
+        'chinese_name': '',
+        'english_name': '',
+        'actor': '',
+        'nation': '',
+        'sex': '',
+        'birth': '',
+        'death': '',
+        'biecheng_chinese': '',
+        'biecheng_english': ''}
+人物基本信息增:'/t1_1_i' POST{
+            'cno': ''
+            'chinese_name': ''
+            'english_name': ''
+            'nno': ''
+            'actor': ''
+            'sex': ''
+            'birth': ''
+            'death': ''}
+人物基本信息删:'/t1_1_d' GET{'cno':''}
+
+爬虫相关
+人物信息url:'/get_name_base' POST{name:"人物名"}
+        {english_name:"英文名",
+        chinese_name:"中文名",
+        nation_chinese:"国家",
+        act:"人物角色",
+        sex:"性别",
+        birth:"出生日期",
+        death:"死亡日期",
+        agname_chinese:"人物中文别名",
+        agname_english:"人物英文别名",
+        }
+爬虫api:get_name_info(name)->dict
+
+组织url:'/get_organization_base' POST{name:"组织名"}
+        {...
+        }
+爬虫api:get_organization_base(name)->dict
+
+国家url:'/get_nation_base' POST{name:"国家名"}
+        {...
+        }
+爬虫api:get_nation_base(name)->dict

@@ -1,0 +1,490 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title></title>
+<!--框架必需start-->
+<script type="text/javascript" src="../../libs/js/jquery.js"></script>
+<script type="text/javascript" src="../../libs/js/language/cn.js"></script>
+<script type="text/javascript" src="../../libs/js/framework.js"></script>
+        <script type="text/javascript" src="../../js/cn.js"></script>
+    <script type="text/javascript" src="../../js/getdata.js"></script>
+<link href="../../libs/css/import_basic.css" rel="stylesheet" type="text/css"/>
+<link rel="stylesheet" type="text/css" id="skin" prePath="../../"/>
+<link rel="stylesheet" type="text/css" id="customSkin"/>
+<!--框架必需end-->
+<script src="../../libs/js/graphical/raphael.js" type="text/javascript"></script>
+<script src="../../libs/js/graphical/popup.js" type="text/javascript"></script>
+<script src="../../libs/js/graphical/chart-column.js" type="text/javascript"></script>
+<script src="../../libs/js/graphical/progress.js" type="text/javascript"></script>
+<!-- 日期选择框start -->
+<script type="text/javascript" src="../../libs/js/form/datePicker/WdatePicker.js"></script>
+<!-- 日期选择框end -->
+
+<!--数据表格start-->
+<script src="../../libs/js/table/quiGrid.js" type="text/javascript"></script>
+<!--数据表格end-->
+<script src="../../dist/Chart.min.js"></script>
+<script src="../../utils.js"></script>
+<style>
+	canvas{
+		-moz-user-select: none;
+		-webkit-user-select: none;
+		-ms-user-select: none;
+	}
+
+	</style>
+</head>
+
+<body>
+  <div class="page_content">	
+  <div style="width:50%">
+		<canvas id="canvas"></canvas>
+	</div>
+	<button id="randomizeData" style="display: none;">Randomize Data</button>
+	<button id="addDataset" style="display: none;">Add Dataset</button>
+	<button id="removeDataset" style="display: none;">Remove Dataset</button>
+	<button id="addData" style="display: none;">Add Data</button>
+	<button id="removeData" style="display: none;">Remove Data</button>
+    <div class="conditionTop">
+		<table width="100%">
+			<tr class="conditionTop_items">
+				<td width="80" style="vertical-align:top;padding-top:5px;"><span class="conditionTop_title">已选条件：</span></td>
+				<td style="text-align:left;padding-top:5px;">
+					<div class="conditionContent">
+						<table width="100%" cellpadding="0" cellspacing="0">
+                            <tr>
+								<td width="100">
+									<li class="condiComplexSubTitle">热点事件：</li>
+								</td>
+								<td>
+									<ul></ul>
+								</td>
+							</tr>
+							<tr>
+								<td width="100">
+									<li class="condiComplexSubTitle">时间段：</li>
+								</td>
+								<td>
+									<ul></ul>
+								</td>
+							</tr>
+						</table>
+					</div>
+				</td>
+			</tr>
+			<tr class="conditionTop_tabs">
+				<td width="80"><span class="conditionTop_title">条件选择：</span></td>
+				<td style="text-align:left;">
+					<ul class="condition_tab">
+						<li>
+							<a>热点事件</a>
+						</li>
+						<li>
+							<a>时间段</a>
+						</li>
+					</ul>
+				</td>
+			</tr>
+		</table>
+		<div class="condition_tab_content">
+            <table>
+                <tr>
+                    <td><input type="text" class="textinput" id="keywords" /></td>
+                    <td><input type="button" value="确 定" class="button" id="keywordsAdd" /></td>
+                </tr>
+            </table>
+		</div>
+
+		<div class="condition_tab_content">
+            <table>
+                <tr>
+                    <td><input type="text" class="textinput" id="keywords" /></td>
+                    <td><input type="button" value="确 定" class="button" id="keywordsAdd" /></td>
+                </tr>
+            </table>
+		</div>
+
+
+	</div>
+
+
+		<div id="maingrid"></div>
+</div>
+</body>
+	<script>
+var randomScalingFactor = function() {
+			return Math.round(Math.random() * 100);
+		};
+
+		var color = Chart.helpers.color;
+		var config = {
+			type: 'radar',
+			data: {
+				labels: ['等级A', '等级B', '等级C', '等级D', '等级E'],
+				datasets: [{
+					label: '事件1',
+					backgroundColor: color(window.chartColors.red).alpha(0.2).rgbString(),
+					borderColor: window.chartColors.red,
+					pointBackgroundColor: window.chartColors.red,
+					data: [
+						randomScalingFactor(),
+						randomScalingFactor(),
+						randomScalingFactor(),
+						randomScalingFactor(),
+						randomScalingFactor(),
+						randomScalingFactor(),
+						randomScalingFactor()
+					]
+				}]
+			},
+			options: {
+				legend: {
+					position: 'top',
+				},
+				title: {
+					display: true,
+					text: '情感正负概率等级 五级图'
+				},
+				scale: {
+					ticks: {
+						beginAtZero: true
+					}
+				}
+			}
+		};
+        $.get(rooturl+'emotion_analyse_figure2',function(ret){
+            testData.rows = ret;
+            initComplete();
+        })
+		window.onload = function() {
+            //把所有感情结果 分为5个列别(-1,-0.6,-0.2,0.2,0.6,1)
+            let temp = Array(5).fill(0);
+            testData.rows.forEach(function (i) {
+                if(i.emotional_plus_or_minus*i.probability <= -0.6)
+                    temp[0]+=1;
+                else if(i.emotional_plus_or_minus*i.probability <= -0.2)
+                    temp[1]+=1;
+                else if(i.emotional_plus_or_minus*i.probability <= 0.2)
+                    temp[2]+=1;
+                else if(i.emotional_plus_or_minus*i.probability <= 0.6)
+                    temp[3]+=1;
+                else
+                    temp[4]+=1;
+            });
+
+            config.data.datasets[0].data=temp;
+			window.myRadar = new Chart(document.getElementById('canvas'), config);
+		};
+
+		document.getElementById('randomizeData').addEventListener('click', function() {
+			config.data.datasets.forEach(function(dataset) {
+				dataset.data = dataset.data.map(function() {
+					return randomScalingFactor();
+				});
+			});
+
+			window.myRadar.update();
+		});
+
+		var colorNames = Object.keys(window.chartColors);
+		document.getElementById('addDataset').addEventListener('click', function() {
+			var colorName = colorNames[config.data.datasets.length % colorNames.length];
+			var newColor = window.chartColors[colorName];
+
+			var newDataset = {
+				label: 'Dataset ' + config.data.datasets.length,
+				borderColor: newColor,
+				backgroundColor: color(newColor).alpha(0.2).rgbString(),
+				pointBackgroundColor: newColor,
+				data: [],
+			};
+
+			for (var index = 0; index < config.data.labels.length; ++index) {
+				newDataset.data.push(randomScalingFactor());
+			}
+
+			config.data.datasets.push(newDataset);
+			window.myRadar.update();
+		});
+
+		document.getElementById('addData').addEventListener('click', function() {
+			if (config.data.datasets.length > 0) {
+				config.data.labels.push('dataset #' + config.data.labels.length);
+
+				config.data.datasets.forEach(function(dataset) {
+					dataset.data.push(randomScalingFactor());
+				});
+
+				window.myRadar.update();
+			}
+		});
+
+		document.getElementById('removeDataset').addEventListener('click', function() {
+			config.data.datasets.splice(0, 1);
+			window.myRadar.update();
+		});
+
+		document.getElementById('removeData').addEventListener('click', function() {
+			config.data.labels.pop(); // remove the label first
+
+			config.data.datasets.forEach(function(dataset) {
+				dataset.data.pop();
+			});
+
+			window.myRadar.update();
+		});
+
+	
+        
+        
+        
+        
+        
+			var testData = {
+                "form.paginate.pageNo": 1,
+                "form.paginate.totalRows": 13,
+                "rows": []
+            }
+//切换tab
+
+				$(".condition_tab").find("a").each(function(i) {
+					$(this).click(function() {
+						$(".condition_tab").find("a").removeClass("current");
+						$(this).addClass("current");
+						$(".condition_tab_content").hide();
+						$(".condition_tab_content").eq(i).show();
+
+						resetGridHeight()
+					})
+				})
+
+				$(".condition_tab_content").each(function(i) {
+
+					$(this).find("input:checkbox").each(function() {
+						
+						//得到对应的选项容器
+						var $ul = $(".conditionContent").find("ul").eq(i);
+
+						//初始化遍历checkbox
+						if($(this).attr("checked")) {
+							
+							//添加条件项
+							renderItem($(this), i, $ul);
+						}
+
+						//checkbox点击时
+						$(this).change(function() {
+							var instance = $(this);
+
+							//checkbox选中
+							if($(this).prop("checked")) {
+								//添加条件项
+								renderItem(instance, i, $ul);
+							}
+							//checkbox取消选中
+							else {
+								$ul.find("li").each(function() {
+									//找到与chekbox对应的条件项
+									if($(this).attr("id") == "item_" + instance.attr("id")) {
+										//移除条件项
+										removeItem($(this), $ul);
+
+									}
+								})
+							}
+						})
+
+					})
+				})
+
+
+			//数据表格使用
+        var g;
+        var menu;
+        var userName;
+		function initComplete(){
+			menu = $.rightClickMenu({ width: 120, items:
+	            [
+	            { text: '查看', click: itemclick , iconClass: 'icon_view', children:
+		            [
+		            { text: '弹窗查看', click: itemclick },
+		            { text: '导出文件', children: [{ text: 'Excel', click: itemclick }, { text: 'Word'}]
+		            }
+		            ] }
+	            ]
+	         }); 
+		
+			 g = $("#maingrid").quiGrid({
+              columns: [{ display: '新闻编码', name: 'id', align: 'center',  width: "10%"},
+                         {
+						display: '新闻标题',
+						name: 'title',
+						align: 'center',
+						width: "20%",
+                        showTitle:true
+					}, {
+						display: '新闻来源',
+						name: 'source',
+						align: 'center',
+						width: "10%"
+                    }, {
+						display: '评论者',
+						name: 'emotional_express',
+						align: 'center',
+						width: "10%"
+					},{
+                        display: '执行者',
+                        name: 'emotional_event',
+                        align: 'center',
+                        width: "10%",
+                        showTitle:true
+                    }, {
+                        display: '新闻情感句',
+                        name: 'emotional_words',
+                        align: 'center',
+                        width: "20%",
+                        showTitle:true
+                    }, {
+                        display: '情感正负',
+                        name: 'emotional_plus_or_minus',
+                        align: 'center',
+                        width: "10%"
+                    }, {
+                        display: '情感概率',
+                        name: 'probability',
+                        align: 'center',
+                        width: "10%"
+                    }, { display: '操作', isAllowHide: false, align: 'left', width: 180,
+                        render: function (rowdata, rowindex, value, column){
+                        return '<div class="grid_opp_container">'
+                                   + '<span class="grid_opp_view" onclick="onView(' + rowdata.id + ')">查看详细内容</span>'
+                               + '</div>';
+                     }}
+                       ],
+					data: testData,
+					pageSize: 10,
+					rownumbers: false,
+					checkbox: false,
+					percentWidthMode: true,
+					height: "140%",
+					width: "100%",
+                 whenRClickToSelect:true,
+                onContextmenu : function (parm,e)
+                {
+                    userName = parm.data.name;
+                    menu.show({ top: e.pageY, left: e.pageX });
+                    return false;
+                } 
+            });
+		}
+         function itemclick(item, i)
+        {
+            top.Toast("showNoticeToast", "菜单项："+item.text+"，点击行："+userName);
+        }
+			$(function() {
+			
+
+
+            //初始化关键字文本框
+
+				var value3 = $("#keywords").val();
+
+				if(value3 != "") {
+					var type = "keywords";
+					var i = 4;
+					var $ul = $(".conditionContent").find("ul").eq(i);
+					renderItem2(type, value3, i, $ul);
+				}
+
+
+				$("#keywordsAdd").click(function() {
+					var value = $("#keywords").val();
+					if(value == "") {
+						alert("请填写关键字！");
+						return;
+					}
+					var type = "keywords";
+					var i = 4;
+					var $ul = $(".conditionContent").find("ul").eq(i);
+					renderItem2(type, value, i, $ul);
+				})
+
+			})
+
+			//添加条件项
+			function renderItem(instance, i, $ul) {
+				$(".conditionTop_items").show();
+
+				var $item = $('<li id="item_' + instance.attr("id") + '" class="item"><a>' + instance.val() + '</a></li>');
+				$ul.parent().parent().show();
+				$ul.show();
+				resetGridHeight()
+
+				$ul.append($item);
+				//点击条件项
+				$item.click(function() {
+					//移除条件项
+					removeItem($(this), $ul);
+                            //将对应的checkbox设为不选中
+                            $(".condition_tab_content").eq(i).find("input:checkbox").each(function() {
+                                                                                          if($(this).attr("id") == instance.attr("id")) {
+                                                                                          $(this).attr("checked", false);
+                                                                                          }
+                                                                                          })
+
+				})
+			}
+
+			//移除条件项
+			function removeItem(instance, $ul) {
+				instance.remove();
+
+				//如果没有条件项了，隐藏整行
+				if($ul.find("li").length == 0) {
+					$ul.parent().parent().hide();
+					$ul.hide();
+					resetGridHeight()
+						//如果所有行都隐藏了，隐藏整体
+					var mainShow = 0;
+					$(".conditionTop_items").find("ul").each(function() {
+						if($(this)[0].style.display == "block") {
+							mainShow = 1;
+						}
+					})
+					if(mainShow == 0) {
+						$(".conditionTop_items").hide();
+						resetGridHeight()
+					}
+				}
+			}
+
+			function renderItem2(type, value, i, $ul) {
+				$(".conditionTop_items").show();
+
+				var $item = $('<li id="item_' + type + '" class="item"><a>' + value + '</a></li>');
+				$ul.parent().parent().show();
+				$ul.show();
+				resetGridHeight()
+
+				$ul.append($item);
+				//点击条件项
+				$item.click(function() {
+					//移除条件项
+					removeItem($(this), $ul);
+
+
+					if(type == "keywords") {
+						$("#keywords").val("");
+					}
+				})
+			}
+
+			function resetGridHeight() {
+				setTimeout(function() {
+					g.resetHeight();
+				}, 500)
+			}
+		</script>
+
+</html>

@@ -1,0 +1,428 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title></title>
+<!--框架必需start-->
+<script type="text/javascript" src="../../libs/js/jquery.js"></script>
+<script type="text/javascript" src="../../libs/js/language/cn.js"></script>
+<script type="text/javascript" src="../../libs/js/framework.js"></script>
+        <script type="text/javascript" src="../../js/cn.js"></script>
+<link href="../../libs/css/import_basic.css" rel="stylesheet" type="text/css"/>
+<link rel="stylesheet" type="text/css" id="skin" prePath="../../"/>
+<link rel="stylesheet" type="text/css" id="customSkin"/>
+<!--框架必需end-->
+<script src="../../libs/js/graphical/raphael.js" type="text/javascript"></script>
+<script src="../../libs/js/graphical/popup.js" type="text/javascript"></script>
+<script src="../../libs/js/graphical/chart-column.js" type="text/javascript"></script>
+<script src="../../libs/js/graphical/progress.js" type="text/javascript"></script>
+<!-- 日期选择框start -->
+<script type="text/javascript" src="../../libs/js/form/datePicker/WdatePicker.js"></script>
+<!-- 日期选择框end -->
+
+<!--数据表格start-->
+<script src="../../libs/js/table/quiGrid.js" type="text/javascript"></script>
+<!--数据表格end-->
+<style type="text/css" media="screen">
+	 #holder {
+                height: 250px;
+                margin: 25px 0 0 0px;
+                width: 800px;
+            }
+        </style>
+
+        <table id="data">
+            <tfoot>
+                <tr>
+                    <th>1</th>
+                    <th>2</th>
+                    <th>3</th>
+                    <th>4</th>
+                    <th>5</th>
+                    <th>6</th>
+                    <th>7</th>
+                    <th>8</th>
+                    <th>9</th>
+                    <th>10</th>
+                    <th>11</th>
+                    <th>12</th>
+                    <th>13</th>
+                    <th>14</th>
+                    <th>15</th>
+                    <th>16</th>
+                    <th>17</th>
+                    <th>18</th>
+                    <th>19</th>
+                    <th>19</th>
+                    <th>20</th>
+                    <th>22</th>
+                    <th>23</th>
+                    <th>24</th>
+                    <th>25</th>
+                    <th>26</th>
+                    <th>27</th>
+                    <th>28</th>
+                    <th>29</th>
+                    <th>30</th>
+                    <th>31</th>
+                </tr>
+            </tfoot>
+            <tbody>
+                <tr>
+                    <td>8</td>
+                    <td>25</td>
+                    <td>27</td>
+                    <td>25</td>
+                    <td>54</td>
+                    <td>59</td>
+                    <td>79</td>
+                    <td>47</td>
+                    <td>27</td>
+                    <td>44</td>
+                    <td>44</td>
+                    <td>51</td>
+                    <td>56</td>
+                    <td>83</td>
+                    <td>12</td>
+                    <td>91</td>
+                    <td>52</td>
+                    <td>12</td>
+                    <td>40</td>
+                    <td>8</td>
+                    <td>60</td>
+                    <td>29</td>
+                    <td>7</td>
+                    <td>33</td>
+                    <td>56</td>
+                    <td>25</td>
+                    <td>1</td>
+                    <td>78</td>
+                    <td>70</td>
+                    <td>68</td>
+                    <td>2</td>
+                </tr>
+            </tbody>
+        </table>
+        <div id="holder"></div>
+</head>
+	<body>
+<div class="page_content">	
+	<div class="conditionTop">
+		<table width="100%">
+			<tr class="conditionTop_items">
+				<td width="80" style="vertical-align:top;padding-top:5px;"><span class="conditionTop_title">已选条件：</span></td>
+				<td style="text-align:left;padding-top:5px;">
+					<div class="conditionContent">
+						<table width="100%" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100">
+									<li class="condiComplexSubTitle">重点国家：</li>
+								</td>
+								<td>
+									<ul></ul>
+								</td>
+							</tr>
+							<tr>
+								<td width="100">
+									<li class="condiComplexSubTitle">重点人物：</li>
+								</td>
+								<td>
+									<ul></ul>
+								</td>
+							</tr>
+							<tr>
+								<td width="100">
+									<li class="condiComplexSubTitle">重点组织：</li>
+								</td>
+								<td>
+									<ul></ul>
+								</td>
+							</tr>
+						</table>
+					</div>
+				</td>
+			</tr>
+			<tr class="conditionTop_tabs">
+				<td width="80"><span class="conditionTop_title">条件选择：</span></td>
+				<td style="text-align:left;">
+					<ul class="condition_tab">
+						<li>
+							<a>重点国家</a>
+						</li>
+						<li>
+							<a>重点人物</a>
+						</li>
+						<li>
+							<a>重点组织</a>
+						</li>
+					</ul>
+				</td>
+			</tr>
+		</table>
+		<div class="condition_tab_content">
+            <table>
+                <tr>
+                    <td><input type="text" class="textinput" id="keywords" /></td>
+                    <td><input type="button" value="确 定" class="button" id="keywordsAdd" /></td>
+                </tr>
+            </table>
+		</div>
+
+		<div class="condition_tab_content">
+            <table>
+                <tr>
+                    <td><input type="text" class="textinput" id="keywords" /></td>
+                    <td><input type="button" value="确 定" class="button" id="keywordsAdd" /></td>
+                </tr>
+            </table>
+		</div>
+
+		<div class="condition_tab_content">
+            <table>
+                <tr>
+                    <td><input type="text" class="textinput" id="keywords" /></td>
+                    <td><input type="button" value="确 定" class="button" id="keywordsAdd" /></td>
+                </tr>
+            </table>
+		</div>
+
+
+	</div>
+
+
+		<div id="maingrid"></div>
+</div>
+
+	</body>
+
+<script>
+			var testData = {
+				"form.paginate.pageNo": 1,
+				"form.paginate.totalRows": 13,
+				"rows": [   {
+					"time": "2017.10",
+					"name": "南海",
+					"newsName": "关注南海事件",
+					"source": "人民日报",
+					"content": "南海事件发生",
+					"subject": "南海事件",
+					"emotionWords": null,
+					"emotion": "正",
+					"grade": "A",
+				}]
+			}
+//切换tab
+				$(".condition_tab").find("a").each(function(i) {
+					$(this).click(function() {
+						$(".condition_tab").find("a").removeClass("current");
+						$(this).addClass("current");
+						$(".condition_tab_content").hide();
+						$(".condition_tab_content").eq(i).show();
+
+						resetGridHeight()
+					})
+				})
+
+				$(".condition_tab_content").each(function(i) {
+
+					$(this).find("input:checkbox").each(function() {
+						
+						//得到对应的选项容器
+						var $ul = $(".conditionContent").find("ul").eq(i);
+
+						//初始化遍历checkbox
+						if($(this).attr("checked")) {
+							
+							//添加条件项
+							renderItem($(this), i, $ul);
+						}
+
+						//checkbox点击时
+						$(this).change(function() {
+							var instance = $(this);
+
+							//checkbox选中
+							if($(this).prop("checked")) {
+								//添加条件项
+								renderItem(instance, i, $ul);
+							}
+							//checkbox取消选中
+							else {
+								$ul.find("li").each(function() {
+									//找到与chekbox对应的条件项
+									if($(this).attr("id") == "item_" + instance.attr("id")) {
+										//移除条件项
+										removeItem($(this), $ul);
+
+									}
+								})
+							}
+						})
+
+					})
+				})
+
+
+			//数据表格使用
+			var g;
+			$(function() {
+				g = $("#maingrid").quiGrid({
+					columns: [{
+						display: '时间',
+						name: 'time',
+						align: 'center',
+						width: "5%"
+					}, {
+						display: '对象名',
+						name: 'name',
+						align: 'center',
+						width: "10%"
+					}, {
+						display: '新闻名',
+						name: 'newsName',
+						align: 'center',
+						width: "10%"
+					}, {
+						display: '新闻来源',
+						name: 'source',
+						align: 'center',
+						width: "10%"
+                    }, {
+                        display: '新闻内容',
+                        name: 'content',
+                        align: 'center',
+                        width: "25%"
+                    }, {
+                        display: '新闻主题',
+                        name: 'subject',
+                        align: 'center',
+                        width: "10%"
+                    }, {
+                        display: '新闻情感句',
+                        name: 'emotionWords',
+                        align: 'center',
+                        width: "10%"
+                    }, {
+                        display: '新闻情感正负',
+                        name: 'emotion',
+                        align: 'center',
+                        width: "10%"
+                    }, {
+                        display: '正负概率等级',
+                        name: 'grade',
+                        align: 'center',
+                        width: "10%"
+                    }],
+					data: testData,
+					pageSize: 10,
+					rownumbers: true,
+					checkbox: true,
+					percentWidthMode: true,
+					height: '100%',
+					width: "100%"
+				});
+
+
+
+            //初始化关键字文本框
+
+				var value3 = $("#keywords").val();
+
+				if(value3 != "") {
+					var type = "keywords";
+					var i = 4;
+					var $ul = $(".conditionContent").find("ul").eq(i);
+					renderItem2(type, value3, i, $ul);
+				}
+
+
+				$("#keywordsAdd").click(function() {
+					var value = $("#keywords").val();
+					if(value == "") {
+						alert("请填写关键字！");
+						return;
+					}
+					var type = "keywords";
+					var i = 4;
+					var $ul = $(".conditionContent").find("ul").eq(i);
+					renderItem2(type, value, i, $ul);
+				})
+
+			})
+
+			//添加条件项
+			function renderItem(instance, i, $ul) {
+				$(".conditionTop_items").show();
+
+				var $item = $('<li id="item_' + instance.attr("id") + '" class="item"><a>' + instance.val() + '</a></li>');
+				$ul.parent().parent().show();
+				$ul.show();
+				resetGridHeight()
+
+				$ul.append($item);
+				//点击条件项
+				$item.click(function() {
+					//移除条件项
+					removeItem($(this), $ul);
+                            //将对应的checkbox设为不选中
+                            $(".condition_tab_content").eq(i).find("input:checkbox").each(function() {
+                                                                                          if($(this).attr("id") == instance.attr("id")) {
+                                                                                          $(this).attr("checked", false);
+                                                                                          }
+                                                                                          })
+
+				})
+			}
+
+			//移除条件项
+			function removeItem(instance, $ul) {
+				instance.remove();
+
+				//如果没有条件项了，隐藏整行
+				if($ul.find("li").length == 0) {
+					$ul.parent().parent().hide();
+					$ul.hide();
+					resetGridHeight()
+						//如果所有行都隐藏了，隐藏整体
+					var mainShow = 0;
+					$(".conditionTop_items").find("ul").each(function() {
+						if($(this)[0].style.display == "block") {
+							mainShow = 1;
+						}
+					})
+					if(mainShow == 0) {
+						$(".conditionTop_items").hide();
+						resetGridHeight()
+					}
+				}
+			}
+
+			function renderItem2(type, value, i, $ul) {
+				$(".conditionTop_items").show();
+
+				var $item = $('<li id="item_' + type + '" class="item"><a>' + value + '</a></li>');
+				$ul.parent().parent().show();
+				$ul.show();
+				resetGridHeight()
+
+				$ul.append($item);
+				//点击条件项
+				$item.click(function() {
+					//移除条件项
+					removeItem($(this), $ul);
+
+
+					if(type == "keywords") {
+						$("#keywords").val("");
+					}
+				})
+			}
+
+			function resetGridHeight() {
+				setTimeout(function() {
+					g.resetHeight();
+				}, 500)
+			}
+		</script>
+
+</html>

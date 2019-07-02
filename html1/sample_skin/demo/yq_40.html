@@ -1,0 +1,227 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>人物基本信息录入</title>
+		<!--框架必需start-->
+		<script type="text/javascript" src="../../libs/js/jquery.js"></script>
+		<script type="text/javascript" src="../../libs/js/language/cn.js"></script>
+		<script type="text/javascript" src="../../libs/js/framework.js"></script>
+        <script type="text/javascript" src="../../js/cn.js"></script>
+		<link href="../../libs/css/import_basic.css" rel="stylesheet" type="text/css" />
+		<link rel="stylesheet" type="text/css" id="skin" prePath="../../" />
+		<link rel="stylesheet" type="text/css" id="customSkin" />
+		<!--框架必需end-->
+		<link rel="stylesheet" type="text/css" href="style/style.css" />
+        
+        <!--基本选项卡start-->
+        <script type="text/javascript" src="../../libs/js/nav/basicTabModern.js"></script>
+        <!--基本选项卡end-->
+		
+		<!-- 日历 -->
+		<script type="text/javascript" src="../../libs/js/form/datePicker/WdatePicker.js"></script>
+
+        <script type="text/javascript" src="../../js/getdata.js"></script>
+
+
+    </head>
+
+	<body>
+        <div class="page_content">
+
+
+			<div class="groupTitle"><span>文本自动抽取</span></div>
+     
+    <div class="basicTabModern">
+		<div name="重点人物爬取" style="width:100%;height:200px;">
+         <div class="infoCard" style="">
+                <form id="form">
+				<table border="0" cellspacing="0" cellpadding="0" class="announcement_title">
+				
+				
+					<tr>
+						<td style="text-align: right;padding-right: 20px;">人物名称（中）</td>
+						<td>
+							<input type="text" name="chinese_name" id="chinese_name" value="" style="width: 400px;"/>
+							<input type="button" name="" id="" value="人物爬取" onclick="getbaseinfo('get_name_base','chinese_name')"/>
+						</td>
+					</tr>
+					<tr>
+						<td style="text-align: right;padding-right: 20px;">人物名称（英）</td>
+						<td>
+							<input type="text" name="english_name" id="english_name" value="" style="width: 400px;"/>
+						</td>
+					</tr>
+					<tr>
+						<td style="text-align: right;padding-right: 20px;">所属国家</td>
+						<td>
+							<input type="text" name="nation_base" id="nation_base" value="" style="width: 400px;"/>
+						</td>
+					</tr>
+					<tr>
+						<td style="text-align: right;padding-right: 20px;">人物角色</td>
+						<td>
+							<input type="text" name="act" id="act" value="" style="width: 400px;"/>
+						</td>
+					</tr>
+				   <tr>
+						<td style="text-align: right;padding-right: 20px;">性别</td>
+						<td>
+							<input type="text" name="sex" id="sex" value="" style="width: 400px;"/>
+						</td>
+					</tr>
+					<tr>
+						<td style="text-align: right;padding-right: 20px;">出生日期</td>
+						<td>
+							<input type="text" class="date" name="birth" id="birth" style="width: 400px;"/>
+						</td>
+					</tr>
+					<tr>
+						<td style="text-align: right;padding-right: 20px;">死亡日期</td>
+						<td>
+							<input type="text" class="date" name="death" id="death" style="width: 400px;"/>
+						</td>
+					</tr>
+					  <tr>
+						<td style="text-align: right;padding-right: 20px;">人物中文别名（空格为分界）</td>
+						<td>
+							<input type="text" name="agname_chinese" id="agname_chinese" value="" style="width: 400px;"/>
+						</td>
+					</tr>
+                    <tr>
+						<td style="text-align: right;padding-right: 20px;">人物英文别名（空格为分界）</td>
+						<td>
+							<input type="text" name="agname_english" id="agname_english" value="" style="width: 400px;"/>
+						</td>
+					</tr>
+					<tr>
+						<td style="text-align: right;padding-right: 20px;">人物任职履历（空格换行为分界）</td>
+						<td>
+							<textarea name="" rows="" cols=""  style="width: 400px;"></textarea>
+						</td>
+					</tr>
+						<tr>
+						<td style="text-align: right;padding-right: 20px;border: 0;"></td>
+						<td style="border: 0;">
+							<input type="button" name="" id="" value="取 消" onclick="window.location='yq_10.html'"/>
+							<input type="button" name="" id="" value="插入数据库" onclick="save('add_name_base', 'yq_10.html')" class="primary"/>
+						</td>
+					</tr>
+				</table>
+                </form>
+		</div>
+     </div>  
+      <div name="重点组织爬取" style="width:100%;height:200px;">  
+          		<div class="infoCard" style="">
+				</div>
+            <form id="form1">
+				<table border="0" cellspacing="0" cellpadding="0" class="announcement_title">
+				
+					<tr>
+						<td style="text-align: right;padding-right: 20px;">组织名称（中）</td>
+						<td>
+							<input type="text" name="chinese_o" id="chinese_o" value="" style="width: 400px;"/>
+								<input type="button" name="" id="" value="组织爬取" onclick="getbaseinfo('get_organization_base','chinese_o')"/>
+						</td>
+					</tr>
+					<tr>
+						<td style="text-align: right;padding-right: 20px;">组织名称（英）</td>
+						<td>
+							<input type="text" name="english_o" id="english_o" value="" style="width: 400px;"/>
+						</td>
+					</tr>
+					<tr>
+						<td style="text-align: right;padding-right: 20px;">所属国家</td>
+						<td>
+							<input type="text" name="nation_o" id="nation_o" value="" style="width: 400px;"/>
+						</td>
+					</tr>
+					<tr>
+						<td style="text-align: right;padding-right: 20px;">主要职责</td>
+						<td>
+							<input type="text" name="" id="" value="" style="width: 400px;"/>
+						</td>
+					</tr>
+				   <tr>
+						<td style="text-align: right;padding-right: 20px;">组织类型</td>
+						<td>
+							<input type="text" name="" id="" value="" style="width: 400px;"/>
+						</td>
+					</tr>
+					<tr>
+						<td style="text-align: right;padding-right: 20px;">建立时间</td>
+						<td>
+							<input type="text" class="date" style="width: 400px;"/>
+						</td>
+					</tr>
+						<tr>
+						<td style="text-align: right;padding-right: 20px;">包含的二级组织</td>
+						<td>
+							<textarea name="" rows="" cols=""  style="width: 400px;"></textarea>
+						</td>
+					</tr>
+						<tr>
+						<td style="text-align: right;padding-right: 20px;border: 0;"></td>
+						<td style="border: 0;">
+							<input type="button" name="" id="" value="取 消" onclick="window.location='yq_20.html'"/>
+							<input type="button" name="" id="" value="插入数据库" onclick="save('add_organization_base', 'yq_10.html', '1')" class="primary"/>
+						</td>
+					</tr>
+				</table>
+				</form>
+			</div>
+        <div name="重点国家爬取" style="width:100%;height:200px;">
+            			<div class="infoCard" style="">
+	
+				</div>
+            <form id="form2">
+				<table border="0" cellspacing="0" cellpadding="0" class="announcement_title">
+				
+				
+				
+					<tr>
+						<td style="text-align: right;padding-right: 20px;">国家名称（中）</td>
+						<td>
+							<input type="text" name="nation_chinese" id="nation_chinese" value="" style="width: 400px;"/>
+							<input type="button" name="" id="" value="爬  取" onclick="getbaseinfo('get_nation_base','nation_chinese')"/>
+						</td>
+					</tr>
+					<tr>
+						<td style="text-align: right;padding-right: 20px;">国家名称（英）</td>
+						<td>
+							<input type="text" name="nation_english" id="nation_english" value="" style="width: 400px;"/>
+						</td>
+					</tr>
+					<tr>
+						<td style="text-align: right;padding-right: 20px;">地理位置</td>
+						<td>
+							<input type="text" name="geographical_position" id="geographical_position" value="" style="width: 400px;"/>
+						</td>
+					</tr>
+				  <tr>
+						<td style="text-align: right;padding-right: 20px;">经济情况</td>
+						<td>
+							<input type="text" name="economic_situation" id="economic_situation" value="" style="width: 400px;"/>
+						</td>
+					</tr>
+						<tr>
+						<td style="text-align: right;padding-right: 20px;border: 0;"></td>
+						<td style="border: 0;">
+							<input type="button" name="" id="" value="取 消" onclick="window.location='yq_30.html'"/>
+							<input type="button" name="" id="" value="插入数据库" onclick="save('add_nation_base', 'yq_30.html', '2')" class="primary"/>
+						</td>
+					</tr>
+				</table>
+				</form>
+			</div>
+		</div>
+    </div> 
+<div class="height_15"></div>
+		<script type="text/javascript">
+
+
+		</script>
+	</body>
+
+</html>

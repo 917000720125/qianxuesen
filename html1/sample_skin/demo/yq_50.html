@@ -1,0 +1,166 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>无标题文档</title>
+		<!--框架必需start-->
+		<script type="text/javascript" src="../../libs/js/jquery.js"></script>
+		<script type="text/javascript" src="../../libs/js/language/cn.js"></script>
+		<script type="text/javascript" src="../../libs/js/framework.js"></script>
+        <script type="text/javascript" src="../../js/cn.js"></script>
+		<script type="text/javascript" src="../../js/getdata.js"></script>
+        <link href="../../libs/css/import_basic.css" rel="stylesheet" type="text/css" />
+		<link rel="stylesheet" type="text/css" id="skin" prePath="../../" />
+		<link rel="stylesheet" type="text/css" id="customSkin" />
+		<!--框架必需end-->
+		<link rel="stylesheet" type="text/css" href="style/style.css" />
+
+		<script src="../../libs/js/table/quiGrid.js" type="text/javascript"></script>
+
+		<style type="text/css">
+			/*body {
+				background: #fff;
+			}*/
+		</style>
+	</head>
+
+	<body>
+		<div class="page_content">
+			<div class="demo_operation">
+					<table border="0" cellspacing="0" cellpadding="0" class="announcement_title">
+				<tr>
+						<td style="text-align: right;padding-right: 20px;">用户信息</td>
+						
+					</tr>
+					<tr>
+						<td style="text-align: right;padding-right: 20px;">账号</td>
+						<td>
+							<input type="text" name="userid" id="userid" value="" disabled="disabled" style="width: 400px;" />
+								
+						</td>
+							<td style="text-align: right;padding-right: 20px;">权限</td>
+						<td>
+							<input type="text" name="permissions" id="permissions" value="" disabled="disabled" style="width: 400px;"/>
+						</td>
+					</tr>
+					<tr>
+						<td style="text-align: right;padding-right: 20px;">姓名</td>
+						<td>
+							<input type="text" name="name" id="name" value="" disabled="disabled" style="width: 400px;"/>
+						</td>
+						<td style="text-align: right;padding-right: 20px;">性别</td>
+						<td>
+							<input type="text" name="sex" id="sex" value="" disabled="disabled" style="width: 400px;"/>
+						</td>
+					</tr>
+				   <tr>
+						<td style="text-align: right;padding-right: 20px;">国家</td>
+						<td>
+							<input type="text" name="national" id="national" value="" disabled="disabled" style="width: 400px;"/>
+						</td>
+						<td style="text-align: right;padding-right: 20px;">电话</td>
+						<td>
+							<input type="text" name="telephone" id="telephone" value="" disabled="disabled" style="width: 400px;"/>
+						</td>
+					
+				   <tr>
+						<td style="text-align: right;padding-right: 20px;">地址</td>
+						<td>
+							<input type="text" name="address" id="address" value="" disabled="disabled" style="width: 400px;"/>
+						</td>
+						<td style="text-align: right;padding-right: 20px;border: 0;"></td>
+						<td style="border: 0;">
+							<input type="button" name="" id="" value="修  改" onclick="window.location='yq_20.html'"/>
+							<input type="button" name="" id="" value="保  存" onclick="" class="primary"/>
+					</tr>
+					
+		
+		
+                </table>    
+			</div>
+			<div class="infoCard infoCard2">
+				<div class="title">
+					<span>历史操作记录</span>
+				</div>
+				
+					<div class="clear"></div>
+				</div>
+				<div id="dataBasic"></div>
+			</div>
+		</div>
+
+		<script type="text/javascript">
+            //用户信息
+            $.post(rooturl+'user_info',function (ret) {
+                let temp;
+                for(let key in ret){
+                    temp = document.getElementById(key);
+                    temp.value = ret[key];
+                }
+            })
+    
+            //操作记录
+			var grid = null;
+			//数据表格使用
+			var gridData = {
+				"form.paginate.pageNo": 1,
+				"form.paginate.totalRows": 13,
+				"rows": []}
+			$.post(rooturl+"history",function(ret){
+            			gridData.rows=ret;
+            			initComplete();
+					})
+
+			function initComplete() {
+				grid = $("#dataBasic").quiGrid({
+					columns: [{
+							display: '对象',
+							name: 'obj',
+							width: "50%",
+							cellClick: true
+						},
+						{
+							display: '操作',
+							name: 'typ',
+							width: "30%"
+						},
+                         {
+							display: '时间',
+							name: 'time',
+							width: "20%"
+						}
+						
+					],
+					data: gridData,
+					sortName: 'id',
+					rownumbers: false,
+					checkbox: false,
+					height: '100%',
+					width: "100%",
+					pageSize: 10,
+					percentWidthMode: true,
+					onAfterShowData: onAfterShowData
+
+				});
+			}
+			
+
+			function onAfterShowData(data) {
+
+				$("#dataBasic").find(".popupMenu").each(function() {
+					$(this).hover(function() {
+						$(this).find(".popupMenu_con").show();
+					}, function() {
+						$(this).find(".popupMenu_con").hide();
+					});
+				})
+			}
+			function SKU_list(){
+				window.location='oa_26.html';
+			}
+			
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta http-equiv="Access-Control-Allow-Origin" content="*" />
+		<title>无标题文档</title>
+		<!--框架必需start-->
+		<script type="text/javascript" src="../../libs/js/jquery.js"></script>
+		<script type="text/javascript" src="../../libs/js/language/cn.js"></script>
+		<script type="text/javascript" src="../../libs/js/framework.js"></script>
+        <script type="text/javascript" src="../../js/cn.js"></script>
+		<link href="../../libs/css/import_basic.css" rel="stylesheet" type="text/css" />
+		<link rel="stylesheet" type="text/css" id="skin" prePath="../../" />
+		<link rel="stylesheet" type="text/css" id="customSkin" />
+		<!--框架必需end-->
+		<link rel="stylesheet" type="text/css" href="style/style.css" />
+
+		<script src="../../libs/js/table/quiGrid.js" type="text/javascript"></script>
+		<script src="../../js/getdata.js" type="text/javascript"></script>
+		<style type="text/css">
+			/*body {
+				background: #fff;
+			}*/
+		</style>
+	</head>
+
+	<body>
+		<div class="page_content">
+			<div class="demo_operation">
+				<input type="button" value="人物录入" class="primary" onclick="window.location='yq_11.html'" />
+			</div>
+			<div class="infoCard infoCard2">
+				<div class="title">
+					<span>重点人物基本信息列表</span>
+				</div>
+				<div class="attendance_list_operation">
+					<table border="0" cellspacing="0" cellpadding="0" class="search_content">
+						<tr>
+							<td>搜索：</td>
+							<td><input type="text" /></td>
+							<td><input type="button" value="搜索" class="" /></td>
+						</tr>
+					</table>
+					<div class="clear"></div>
+				</div>
+				<div id="dataBasic"></div>
+			</div>
+		</div>
+
+		<script type="text/javascript">
+			var grid = null;
+			//数据表格使用
+			var gridData = {
+						"form.paginate.pageNo": 1,
+						"form.paginate.totalRows": 13,
+						"rows": []
+			};
+            loadData();
+			function deletedata(cno) {
+			    // body...
+                $.get(rooturl + "t1_1_d?cno="+cno,function(ret){
+			            if(ret['success']=='yes'){
+			                loadData()
+			            }else{
+			                alert(ret['why'])
+                        }
+			        });
+			}
+			function loadData(){
+           	$.get(rooturl+"t1_1_s",function(ret){
+            			gridData.rows=ret;
+            			initComplete();
+					});
+			}
+            function updatedata(url,cno,chinese_name,english_name,cagname,eagname,nation,actor,sex,birth,death){
+                window.location=url;
+			    var storage=window.localStorage;
+			    storage["cno"]=cno;
+                storage["chinese_name"]=chinese_name;
+                storage["english_name"]=english_name;
+                storage["cagname"]=cagname;
+                storage["eagname"]=eagname;
+                storage["nation"]=nation;
+                storage["actor"]=actor;
+                storage["sex"]=sex;
+                storage["birth"]=birth;
+                storage["death"]=death;
+            }
+			function initComplete() {
+				
+				grid = $("#dataBasic").quiGrid({
+					columns: [
+						{
+							display: '人物编号',
+							name: 'cno',
+							width: "5%"
+						},
+						{
+							display: '中文名',
+							name: 'chinese_name',
+							width: "10%"
+						},
+                         {
+							display: '英文名',
+							name: 'english_name',
+							width: "10%"
+						},
+                        	{
+							display: '中文别称',
+							name: 'biecheng_chinese',
+							width: "10%"
+						},
+                         {
+							display: '英文别称',
+							name: 'biecheng_english',
+							width: "10%"
+						},
+						{
+							display: '国家',
+							name: 'nation',
+							width: "10%"
+						},
+						
+						{
+							display: '角色',
+							name: 'actor',
+							width: "5%"
+						},
+                        {
+							display: '性别',
+							name: 'sex',
+							width: "5%"
+						},    
+						{
+							display: '出生日期',
+							name: 'birth',
+							width: "10%"
+						},
+						{
+							display: '死亡日期',
+							name: 'death',
+							width: "10%"
+						},
+						{
+							display: '操作',
+							name: 'name',
+							align: 'center',
+							width: "15%",
+							render: function(rowdata, rowindex, value, column) {
+								var mainCon = $('<div></div>');
+								var con = $('<span class="operation_look" onclick="updatedata(\'yq_10_1.html\',\'' + rowdata.cno+'\',\'' + rowdata.chinese_name+'\',\'' + rowdata.english_name+'\',\'' + rowdata.biecheng_chinese+'\',\'' + rowdata.biecheng_english+'\',\'' + rowdata.nation+'\',\'' + rowdata.actor+'\',\'' + rowdata.sex+'\',\'' + rowdata.birth+'\',\'' + rowdata.death+'\')">修改</span><div class="popupMenu popupMenu2"><div class="popupMenu_link"><a href="javascript:;" onclick="deletedata(\'' + rowdata.cno+'\')" class="themeBgColor">删除</a></div>');
+								mainCon.append(con);
+								return mainCon.html();
+							}
+						}
+					],
+					data: gridData,
+					sortName: 'id',
+					rownumbers: false,
+					checkbox: false,
+					height: '100%',
+					width: "100%",
+					pageSize: 10,
+					percentWidthMode: true,
+					onAfterShowData: onAfterShowData
+
+				});
+			}
+
+
+			function onAfterShowData(data) {
+
+				$("#dataBasic").find(".popupMenu").each(function() {
+					$(this).hover(function() {
+						$(this).find(".popupMenu_con").show();
+					}, function() {
+						$(this).find(".popupMenu_con").hide();
+					});
+				})
+			}
+			function SKU_list(){
+				window.location='oa_26.html';
+			}
+			
+		</script>
+	</body>
+</html>

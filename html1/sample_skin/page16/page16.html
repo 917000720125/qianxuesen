@@ -1,0 +1,171 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title></title>
+<!--框架必需start-->
+<script type="text/javascript" src="../../libs/js/jquery.js"></script>
+<script type="text/javascript" src="../../libs/js/language/cn.js"></script>
+<script type="text/javascript" src="../../libs/js/framework.js"></script>
+<link href="../../libs/css/import_basic.css" rel="stylesheet" type="text/css"/>
+<link rel="stylesheet" type="text/css" id="skin" prePath="../../"/>
+<link rel="stylesheet" type="text/css" id="customSkin"/>
+<!--框架必需end-->
+<script src="../../libs/js/graphical/raphael.js" type="text/javascript"></script>
+<script src="../../libs/js/graphical/progress.js" type="text/javascript"></script>
+<style>
+	 #holder {
+                position: relative;
+                width: 800px;
+                height: 250px;
+                margin:15px auto;
+            }
+    .ring_text1{
+        position: absolute;
+        top:140px;
+        left: 400px;
+        font-size: 16px;
+        width: 160px;
+        text-align: center;
+    }
+</style>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>情感分析</title>
+		<!--框架必需start-->
+		<script type="text/javascript" src="../../libs/js/jquery.js"></script>
+		<script type="text/javascript" src=" 
+		    
+		../../libs/js/language/cn.js"></script>
+		<script type="text/javascript" src="../../libs/js/framework.js"></script>
+		<link href="../../libs/css/import_basic.css" rel="stylesheet" type="text/css" />
+		<link rel="stylesheet" type="text/css" id="skin" prePath="../../" />
+		<link rel="stylesheet" type="text/css" id="customSkin" />
+		<!--框架必需end-->
+		<link rel="stylesheet" type="text/css" href="style/style.css" />
+
+		<script src="../../libs/js/table/quiGrid.js" type="text/javascript"></script>
+
+		<style type="text/css">
+			/*body {
+				background: #fff;
+			}*/
+		</style>
+</head>
+<body>
+<div class="page_content">
+	<div id="holder">
+           <div class="ring_text1">支持度</div>
+           
+           
+    </div>
+</div>
+<script>
+	var radius = 70;
+
+    var param1 = {stroke: "#3399ff", "stroke-width": 10};
+     var param2 = {stroke: "#1fc695", "stroke-width": 8};
+     var param3 = {stroke: "#ff9900", "stroke-width": 6};
+
+     var paramBg = {stroke: "#1fc695", "stroke-width": 4,opacity: 0.5,"stroke-linecap":"round"};
+    var paramGreen = {stroke: "#1fc695", "stroke-width": 10,"stroke-linecap":"round"};
+ $(function(){
+       
+        var paper =initPaper("holder", 800, 280);   
+        //paper,current1,current2,current3,min,max,cx,cy,radius,param1,param2,param3
+       
+        drawRingProgress3(paper,80,0,100,480,150,radius,paramGreen,paramBg);
+
+
+    })   
+</script>
+<div class="page_content">
+			
+			<div class="infoCard infoCard2">
+				
+				<div class="attendance_list_operation">
+					
+					<div class="clear"></div>
+				</div>
+				<div id="dataBasic"></div>
+			</div>
+		</div>
+
+		<script type="text/javascript">
+			var grid = null;
+			//数据表格使用
+			var gridData = {
+				"form.paginate.pageNo": 1,
+				"form.paginate.totalRows": 13,
+				"rows": [{
+						
+						"name": "特郎普",
+                    "newstopic":"南海危机",
+                    "emotional_words":"要求*****",
+                    "emotional_plus_or_minus":"负",
+                    "probability":"30%"
+                    
+                    
+					}
+				]
+			}
+
+			function initComplete() {
+				grid = $("#dataBasic").quiGrid({
+					columns: [{
+							display: '文本编号',
+							name: 'hno',
+							width: "10%"
+						},{
+							display: '相关人物或组织',
+							name: 'name',
+							width: "10%",
+							cellClick: true
+						},{
+							display:'文本主题',
+							name: 'newstopic',
+							width: "20%",
+							cellClick: true
+						},{
+							display: '文本情感句',
+							name: 'emotional_words',
+							width: "20%",
+							cellClick: true
+						},{
+							display: '文本情感正负',
+							name: 'emotional_plus_or_minus',
+							width: "20%",
+							cellClick: true
+						},{
+							display: '情感正负概率',
+							name: 'probability',
+							width: "20%"
+						}
+					],
+					data: gridData,
+					sortName: 'id',
+					rownumbers: false,
+					checkbox: false,
+					height: '100%',
+					width: "100%",
+					pageSize: 10,
+					percentWidthMode: true,
+					onAfterShowData: onAfterShowData
+
+				});
+			}
+			
+
+			function onAfterShowData(data) {
+
+				$("#dataBasic").find(".popupMenu").each(function() {
+					$(this).hover(function() {
+						$(this).find(".popupMenu_con").show();
+					}, function() {
+						$(this).find(".popupMenu_con").hide();
+					});
+				})
+			}
+		
+		</script>
+</body>
+</html>

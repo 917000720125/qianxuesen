@@ -1,0 +1,331 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title></title>
+<!--框架必需start-->
+<script type="text/javascript" src="../../libs/js/jquery.js"></script>
+<script type="text/javascript" src="../../libs/js/language/cn.js"></script>
+<script type="text/javascript" src="../../libs/js/framework.js"></script>
+        <script type="text/javascript" src="../../js/cn.js"></script>
+    <script type="text/javascript" src="../../js/getdata.js"></script>
+<link href="../../libs/css/import_basic.css" rel="stylesheet" type="text/css"/>
+<link rel="stylesheet" type="text/css" id="skin" prePath="../../"/>
+<link rel="stylesheet" type="text/css" id="customSkin"/>
+<!--框架必需end-->
+<script src="../../libs/js/graphical/raphael.js" type="text/javascript"></script>
+<script src="../../libs/js/graphical/popup.js" type="text/javascript"></script>
+<script src="../../libs/js/graphical/chart-column.js" type="text/javascript"></script>
+<script src="../../libs/js/graphical/progress.js" type="text/javascript"></script>
+<!--进度条start-->
+<script type="text/javascript" src="../../libs/js/other/progressbar.js"></script>
+<!--进度条end-->
+
+<!--引入弹窗组件start-->
+<script type="text/javascript" src="../../libs/js/popup/drag.js"></script>
+<script type="text/javascript" src="../../libs/js/popup/dialog.js"></script>
+<!--引入弹窗组件end-->
+
+
+		<!-- 树组件start -->
+		<script type="text/javascript" src="../../libs/js/tree/ztree/ztree.js"></script>
+		<link type="text/css" rel="stylesheet" href="../../libs/js/tree/ztree/ztree.css">
+		<!-- 树组件end -->
+
+		<!-- 树形下拉框start -->
+		<script type="text/javascript" src="../../libs/js/form/selectTree.js"></script>
+		<!-- 树形下拉框end -->
+<!-- 日期选择框start -->
+<script type="text/javascript" src="../../libs/js/form/datePicker/WdatePicker.js"></script>
+<!-- 日期选择框end -->
+
+<!--数据表格start-->
+<script src="../../libs/js/table/quiGrid.js" type="text/javascript"></script>
+<!--数据表格end-->
+<script src="../../dist/Chart.min.js"></script>
+<script src="../../utils.js"></script>
+<style>
+	canvas{
+		-moz-user-select: none;
+		-webkit-user-select: none;
+		-ms-user-select: none;
+	}
+	</style>
+</head>
+
+<body>
+  <div class="page_content">
+<div class="groupTitle"><span>网站</span></div>
+<div class="selectTree" id="selectTree1" multiMode="true" noGroup="true" data='{"treeNodes":[{ "id":"000", "parentId":"0", "name":"BBC"}]}'>
+</div>
+     <br/>
+   <div class="groupTitle"><span>事件</span></div>
+<div class="selectTree" id="selectTree2" multiMode="true" noGroup="true" data='{"treeNodes":[{ "id":"000", "parentId":"0", "name":"BBC"}]}'>
+</div>
+     <br/>
+<div class="groupTitle"><span>时间段</span></div>
+			<input type="text" id="beginTime" class="date" style="width:250px;" dateFmt="yyyy-MM-dd HH:mm:ss" />
+			<input type="text" id="endTime" class="date" style="width:250px;" dateFmt="yyyy-MM-dd HH:mm:ss" />
+            <input type="button" value="爬取" onclick="get_news()" />
+      <br/>
+      <div class="groupTitle"><span>情感分析</span></div>
+             <input type="button" value="情感分析" class="primary" onclick="emotion_analyse()" />
+            <br/>
+		<div id="maingrid"></div>
+      		<div style="display:none" id="content">这是指定容器的内容。</div>
+
+
+</div>
+</body>
+
+		<script type="text/javascript">
+			var dateSkin = "blue";
+            $.get(rooturl+"get_source",function(ret) {
+                let treenodes = {"treeNodes":[]}
+                for(let i in ret){
+                    $('#selectTree1').addItem({ "id":String(ret[i]["id"]), "parentId":"0", "name":ret[i]["name"]})
+                }
+                $('#selectTree1').removeItem("000");
+            });
+
+
+            var interval2;
+            var diagContentId=100;
+            var get_source_pbbar_pos=0
+            function popWin(){
+                diag = new Dialog();
+                diag.Title = "处理进度";
+                diag.ID="c1";
+                diag.Width=330;
+                diag.Height=100;
+                diag.ShowCloseButton=false;
+                diag.show();
+                var $container=$(document.getElementById("_Container_c1"));
+                var $progress=$('<div class="padding_top20 padding_left10"></div>');
+                diagContentId++;
+                var $progressCon1=$('<div class="padding_bottom5">正在处理中，请不要关闭或切换其他页面。</div>');
+                var $progressCon2=$('<div></div>');
+                var $progressCon3=$('<span></span>');
+                $progress.append($progressCon1);
+                $progress.append($progressCon2);
+                $progress.append($progressCon3);
+                $progressCon2.attr("id",diagContentId);
+                $progressCon3.attr("id", diagContentId+"-label");
+                $container.append($progress);
+
+                var _pbbar_pos = 0;
+                var _progress = $progressCon2.progressCtrl({ skin: '../../libs/images/loading/progress.png', width:300});
+                interval2= setInterval(function(){
+                     if(get_source_pbbar_pos < 90){
+                         get_source_pbbar_pos++;
+                     }
+                     if (get_source_pbbar_pos > 100){
+                         get_source_pbbar_pos = 0;
+                         clearInterval(interval2);
+                         top.Dialog.alert("处理完成！");
+                         if(diag){
+                             diag.close();
+                         }
+                         return;
+                     }
+                     _progress.progressCtrl(get_source_pbbar_pos);
+
+                    }, 100);
+            }
+            $.get(rooturl+"get_event",function(ret) {
+                let treenodes = {"treeNodes":[]}
+                for(let i in ret){
+                    $('#selectTree2').addItem({ "id":String(ret[i]["id"]), "parentId":"0", "name":ret[i]["name"]})
+                }
+                $('#selectTree2').removeItem("000");
+            })
+            function get_news() {
+                let event = $('#selectTree2').attr('relText')
+                let begin_time = $("#beginTime").val()
+                let end_time = $("#endTime").val()
+                if(event == "请选择")
+                    alert("请选择事件")
+                else if(begin_time == "" || end_time == "")
+                    alert("请选择时间")
+                else
+                    popWin();
+                    $.get(rooturl+'get_huanqiu_news?'+'key='+event+'&begin_time='+begin_time+'&end_time='+end_time,function (ret) {
+                        testData.rows = ret;
+                        get_source_pbbar_pos=101;
+                        initComplete();
+                    })
+            }
+			function initComplete() {
+				//获取当前主题风格，用于设置日期控件的皮肤
+				try {
+					dateSkin = themeColor;
+				} catch(e) {}
+
+				//自定义点击触发日期控件
+				document.getElementById('beginTime').onfocus = function() {
+					var endtimeTf = $dp.$('endTime');
+					WdatePicker({
+						skin: dateSkin,
+						onpicked: function() {
+							endtimeTf.focus();
+						},
+						maxDate: '#F{$dp.$D(\'endTime\')}'
+					});
+				}
+				document.getElementById('endTime').onfocus = function() {
+					//这里设置了最大日期为当前日期，如果不需要则把maxDate:'%y-%M-%d'去掉
+					WdatePicker({
+						skin: dateSkin,
+						minDate: '#F{$dp.$D(\'beginTime\')}'
+					});
+				}
+
+				//平面显示
+				WdatePicker({
+					skin: dateSkin,
+					eCont: 'div1',
+					onpicked: function(dp) {
+						top.Toast("showNoticeToast", '你选择的日期是:' + dp.cal.getDateStr())
+					}
+				})
+
+				document.getElementById('date-11').onfocus = function() {
+					WdatePicker({
+						skin: dateSkin,
+						maxDate: '%y-%M-%d'
+					});
+				}
+			}
+
+			function emotion_analyse() {
+                //把列表里面选中的新闻发送'/emotion_analyse'进行情感分析
+                window.location="yq_81.html"
+            }
+
+			//动态生成
+			function createDate() {
+				var $date = $('<br/><br/><input type="text" class="date" style="width:250px;" dateFmt="yyyy-MM-dd HH:mm:ss"/>');
+				$("#testBtn").after($date);
+				$date.render();
+			}
+
+			//设为不可用
+			function disableSelect() {
+				$("#date-8").attr("disabled", true);
+			}
+			//设为可用
+			function enableSelect() {
+				$("#date-8").attr("disabled", false);
+			}
+
+			//动态赋值
+			function setValue() {
+				$("#date-7").val("2012-07-08");
+			}
+            
+            
+            var testData={"form.paginate.pageNo":1,
+                "form.paginate.totalRows":13,
+                "rows":[{"id":"1",
+                        "title":"叫嚣","content":"据外","time":"18-05-10 11:53","source":"央视网"}]}
+            
+
+            var g;
+            
+		function initComplete(){
+			 g = $("#maingrid").quiGrid({
+                columns: [
+	                { display: '新闻编号', name: 'id', align: 'center',  width: "5%"},
+	                { display: '新闻标题', name: 'title', align: 'center' , width: "35%",showTitle:true },
+	                { display: '新闻内容', name: 'content',  align: 'center' , width: "40%",showTitle:true},
+	                { display: '新闻时间', name: 'time',  align: 'center', width: "10%"},
+                    { display: '新闻来源', name: 'url',  align: 'center', width: "10%" },
+                    { display: '操作', isAllowHide: false, align: 'left', width: 180,
+                        render: function (rowdata, rowindex, value, column){
+                            return '<div class="grid_opp_container">'
+                                   + '<span class="grid_opp_view" onclick=window.open("' +rowdata['url']+ '")>查看详细内容</span>'
+                               + '</div>';
+                     }}
+
+                ], data:testData, pageSize: 20,
+					sortName: 'id', rownumbers:false, checkbox:true,percentWidthMode:true,
+                height: '100%', width:"100%"
+            });
+
+
+		}
+    function onView(rowid){
+      top.Toast("showNoticeToast", "选择的记录Id是:" + rowid );
+    }
+            
+
+
+        
+    //折线图
+
+	var randomScalingFactor = function() {
+			return Math.round(Math.random() * 100);
+		};
+		var datapoints = [0, 20, 20, 60, 60, 120, NaN, 180, 120, 125, 105, 110, 170];
+		var config = {
+			type: 'line',
+			data: {
+				labels: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+				datasets: [
+					{
+					label: 'Linear interpolation',
+					data: datapoints,
+					borderColor: window.chartColors.green,
+					backgroundColor: 'rgba(0, 0, 0, 0)',
+					fill: false,
+					lineTension: 0
+				}]
+			},
+			options: {
+				responsive: true,
+				title: {
+					display: true,
+					text: '时间-情感正负概率折线图'
+				},
+				tooltips: {
+					mode: 'index'
+				},
+				scales: {
+					xAxes: [{
+						display: true,
+						scaleLabel: {
+							display: true,
+                            labelString: '时间'
+						}
+					}],
+					yAxes: [{
+						display: true,
+						scaleLabel: {
+							display: true,
+							labelString: '情感正负概率'
+						},
+						ticks: {
+							suggestedMin: -10,
+							suggestedMax: 200,
+						}
+					}]
+				}
+			}
+		};
+
+		window.onload = function() {
+			var ctx = document.getElementById('canvas').getContext('2d');
+			window.myLine = new Chart(ctx, config);
+		};
+	document.getElementById('randomizeData').addEventListener('click', function() {
+			for (var i = 0, len = datapoints.length; i < len; ++i) {
+				datapoints[i] = Math.random() < 0.05 ? NaN : randomScalingFactor();
+			}
+			window.myLine.update();
+		});
+
+
+
+		</script>
+
+</html>
