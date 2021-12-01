@@ -32,7 +32,7 @@
 					<tr>
 						<td style="text-align: right;padding-right: 20px;">国家编号</td>
 						<td>
-							<input type="text" name="nno" id="" value="" style="width: 400px;"/>
+							<input type="text" name="nno" id="nno" value="" style="width: 400px;"/>
 						</td>
 					</tr>
 				
@@ -76,7 +76,9 @@
 
 		<script type="text/javascript">
 			
-
+     $.get(rooturl+"t3_1_id",function(ret){
+            			document.getElementById('nno').value=ret['id']
+					});
 
 		</script>
 	</body>

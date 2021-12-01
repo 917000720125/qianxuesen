@@ -87,8 +87,6 @@
                 }
                 $('#selectTree1').removeItem("000");
             });
-
-
             var interval2;
             var diagContentId=100;
             var get_source_pbbar_pos=0
@@ -140,6 +138,7 @@
                 $('#selectTree2').removeItem("000");
             })
             function get_news() {
+                let website=$('#selectTree1').attr('relText')
                 let event = $('#selectTree2').attr('relText')
                 let begin_time = $("#beginTime").val()
                 let end_time = $("#endTime").val()
@@ -149,7 +148,7 @@
                     alert("请选择时间")
                 else
                     popWin();
-                    $.get(rooturl+'get_huanqiu_news?'+'key='+event+'&begin_time='+begin_time+'&end_time='+end_time,function (ret) {
+                    $.get(rooturl+'get_huanqiu_news?'+'key='+event+'&website='+website+'&begin_time='+begin_time+'&end_time='+end_time,function (ret) {
                         testData.rows = ret;
                         get_source_pbbar_pos=101;
                         initComplete();
@@ -236,11 +235,11 @@
 			 g = $("#maingrid").quiGrid({
                 columns: [
 	                { display: '新闻编号', name: 'id', align: 'center',  width: "5%"},
-	                { display: '新闻标题', name: 'title', align: 'center' , width: "35%",showTitle:true },
-	                { display: '新闻内容', name: 'content',  align: 'center' , width: "40%",showTitle:true},
+	                { display: '新闻标题', name: 'title', align: 'center' , width: "30%",showTitle:true },
+	                { display: '新闻内容', name: 'content',  align: 'center' , width: "35%",showTitle:true},
 	                { display: '新闻时间', name: 'time',  align: 'center', width: "10%"},
                     { display: '新闻来源', name: 'url',  align: 'center', width: "10%" },
-                    { display: '操作', isAllowHide: false, align: 'left', width: 180,
+                    { display: '操作', isAllowHide: false, align: 'left', width: "10%",
                         render: function (rowdata, rowindex, value, column){
                             return '<div class="grid_opp_container">'
                                    + '<span class="grid_opp_view" onclick=window.open("' +rowdata['url']+ '")>查看详细内容</span>'

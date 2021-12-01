@@ -1,0 +1,259 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title></title>
+<!--框架必需start-->
+    </script><script type="text/javascript" src="../../libs/js/echarts.min.js"></script>
+<script type="text/javascript" src="../../libs/js/jquery.js"></script>
+<script type="text/javascript" src="../../libs/js/language/cn.js"></script>
+<script type="text/javascript" src="../../libs/js/framework.js"></script>
+        <script type='text/javascript' src='../../libs/js/form/selectSuggestion.js'></script>
+        <script type="text/javascript" src="../../js/cn.js"></script>
+    <script type="text/javascript" src="../../js/getdata.js"></script>
+<link href="../../libs/css/import_basic.css" rel="stylesheet" type="text/css"/>
+<link rel="stylesheet" type="text/css" id="skin" prePath="../../"/>
+<link rel="stylesheet" type="text/css" id="customSkin"/>
+<!--框架必需end-->
+<script src="../../libs/js/graphical/raphael.js" type="text/javascript"></script>
+<script src="../../libs/js/graphical/popup.js" type="text/javascript"></script>
+<script src="../../libs/js/graphical/chart-column.js" type="text/javascript"></script>
+<script src="../../libs/js/graphical/progress.js" type="text/javascript"></script>
+
+<!-- 日期选择框start -->
+<script type="text/javascript" src="../../libs/js/form/datePicker/WdatePicker.js"></script>
+<!-- 日期选择框end -->
+
+<!--数据表格start-->
+<script src="../../libs/js/table/quiGrid.js" type="text/javascript"></script>
+<!--数据表格end-->
+<script src="../../dist/Chart.min.js"></script>
+<script src="../../utils.js"></script>
+<style>
+	canvas{
+		-moz-user-select: none;
+		-webkit-user-select: none;
+		-ms-user-select: none;
+	}
+
+	</style>
+</head>
+
+<body>
+  <div class="page_content">
+   	<div id="container" style="width: 60%;">
+		<canvas id="canvas" width="1000" height="400" ></canvas>
+	</div>
+	</div>
+      <div class="conditionTop">
+          <table width="100%">
+			<tr class="conditionTop_tabs">
+                <div class="selectSuggestion" id="suggestion1" keepDefaultStyle="true" showList="true"  prompt="类型" ></div>
+                <Button id="select"  onclick="javascript:history.back(1);" >返回上一页</button>
+			</tr>
+        </table>
+    </div>
+		<div id="maingrid"></div>
+</div>
+</body>
+	<script>
+		var color = Chart.helpers.color;
+        config = {
+            type: 'bar',
+            data: {
+                datasets: [{
+                    lables: "人数",
+                    backgroundColor: color(window.chartColors.red).alpha(0.5).rgbString(),
+                    borderColor: window.chartColors.red,
+                    borderWidth: 2,
+                    data: []
+                }]
+            },
+            options: {
+                animation: {           // 这部分是数值显示的功能实现
+                     onComplete: function () {
+                         var chartInstance = this.chart,
+                             ctx = chartInstance.ctx;
+                         // 以下属于canvas的属性（font、fillStyle、textAlign...）
+                         ctx.font = Chart.helpers.fontString(Chart.defaults.global.defaultFontSize, Chart.defaults.global.defaultFontStyle, Chart.defaults.global.defaultFontFamily);
+                         ctx.fillStyle = "black";
+                         ctx.textAlign = 'center';
+                         ctx.textBaseline = 'bottom';
+                         this.data.datasets.forEach(function (dataset, i) {
+                             var meta = chartInstance.controller.getDatasetMeta(i);
+                             meta.data.forEach(function (bar, index) {
+                                 var data = dataset.data[index];
+                                 ctx.fillText(data, bar._model.x, bar._model.y - 5);
+                             });
+                         });
+                     }
+                 },
+                responsive: true,
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: '论文成果统计'
+                },
+                scales: {
+                    xAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                        }
+                    }],
+                    yAxes: [{
+                        display: true,
+                          ticks: {
+                             stepSize: 1
+                        },
+                        scaleLabel: {
+                            display: true,
+                            labelString: '论文发表人数'
+                        }
+                    }]
+                }
+            }
+        }
+        var myChart = echarts.init(document.getElementById('canvas'));
+         window.onload = function() {
+              //var selData1 = {"list":[{'value':1,"key":'学院'},{'value':2,"key":'专业'},{'value':3,"key":'学生类别'},{'value':4,"key":'排名'},{'value':5,"key":'发表情况'},{'value':6,"key":'收录期刊'},{'value':7,"key":'刊出时间'}]}
+             var selData1 = {"list":[{'value':2,"key":'专业'},{'value':3,"key":'学生类别'},{'value':4,"key":'排名'},{'value':5,"key":'专利类型'},{'value':6,"key":'公告日期'}]}
+             $("#suggestion1").data("data", selData1)
+                //刷新下拉框
+             $("#suggestion1").render();
+             kind='专业'
+            $.get(rooturl + 'patent_all?kind='+kind, function (ret) {
+                  var lab=[]
+               var score=[]
+            testData.rows = ret;
+                 for(let i=0;i<testData.rows.length;i++) {
+                   lab[i] = testData.rows[i]["key"]
+                   score[i] = testData.rows[i]['number']
+               }
+            initComplete();
+            intubiao(lab,score);
+            })
+        }
+        $("#suggestion1").bind("listSelect", function() {
+            kind=$('#suggestion1').attr("relText")
+            console.log(kind)
+            $.get(rooturl + 'patent_all?kind='+kind, function (ret) {
+                  var lab=[]
+               var score=[]
+            testData.rows = ret;
+                 for(let i=0;i<testData.rows.length;i++) {
+                   lab[i] = testData.rows[i]["key"]
+                   score[i] = testData.rows[i]['number']
+               }
+            initComplete();
+            intubiao(lab,score);
+            })
+        })
+           function intubiao1(){
+            $('#canvas').remove();
+	        $('#container').append('<canvas id="canvas"></canvas>');//清空画布
+            var ctx = document.getElementById('canvas').getContext('2d');
+			var mychart = new Chart(ctx, config);
+             config.data.datasets[0].label="综合成绩"
+            var lab=[];
+            for(let i=0;i<testData.rows.length;i++){
+                lab[i]=testData.rows[i]["key"]
+                config.data.datasets[0].data[i]=testData.rows[i]['number']
+            }
+            config.data.labels=lab;
+            mychart.update();
+		}
+        function intubiao(lab,score){
+               console.log(lab)
+            myChart.setOption(option = {
+        title: {
+            text: '详细评教成绩折线图'
+        },
+        tooltip: {
+            trigger: 'axis'
+        },
+        xAxis: {
+            data:lab,
+           splitLine: {
+                show: true
+            }
+        },
+        yAxis: {
+            splitLine: {
+                show: true
+            }
+        },
+        toolbox: {
+            left: 'center',
+            feature: {
+                dataZoom: {
+                    yAxisIndex: 'none'
+                },
+                restore: {},
+                saveAsImage: {}
+            }
+        },
+        dataZoom: [ {
+            type: 'inside'
+        }],
+        series: {
+            name: '详细评教成绩',
+            type: 'bar',
+            label: {
+                normal: {
+                    show: true,
+                    position: 'top'
+                }
+            },
+            data: score
+        }
+       })
+        }
+
+			var testData = {}
+//切换
+			//数据表格使用
+        var g;
+        var menu;
+        var userName;
+		function initComplete(){
+			 g = $("#maingrid").quiGrid({
+              columns: [{
+						display: '名称',
+						name: 'key',
+						align: 'center',
+						width: "20%"
+					}, {
+						display: '发表论文数',
+						name: 'number',
+						align: 'center',
+						width: "20%"
+					},{ display: '操作', isAllowHide: false, align: 'center', width: '20%',
+                       render: function (rowdata, rowindex, value, column){
+                       return '<div class="grid_opp_container">'
+                                  + '<span class="grid_opp_view" onclick=show(\''+ rowdata.key+'\')>查看详情</span>'
+                            + '</div>';
+                     }}
+                  ],
+					data: testData,
+					pageSize: 10,
+					rownumbers: false,
+					checkbox: false,
+					percentWidthMode: true,
+					width: "100%",
+                    whenRClickToSelect:true,
+             });
+		}
+		function show(parameter)
+        {
+               var storage=window.localStorage;
+                storage["option"]=$('#suggestion1').attr("relText")
+                storage["parameter"]=parameter
+                window.location='patoffs_patent_details.html';
+        }
+
+		</script>
+
+</html>

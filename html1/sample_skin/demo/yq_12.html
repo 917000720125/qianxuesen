@@ -37,8 +37,8 @@
 					<table border="0" cellspacing="0" cellpadding="0" class="search_content">
 						<tr>
 							<td>搜索：</td>
-							<td><input type="text" /></td>
-							<td><input type="button" value="搜索" class="" /></td>
+							<td><input type="text" id="seacher" /></td>
+							<td><input type="button" value="搜索" class="" onclick="seach('t1_2_seach',document.getElementById('seacher').value)"/></td>
 						</tr>
 					</table>
 					<div class="clear"></div>
@@ -56,9 +56,26 @@
 				"rows": []
 			}
 			 loadData();
-			function deletedata(cno) {
+			function loadData(){
+           $.get(rooturl+"t1_2_s",function(ret){
+            			gridData.rows=ret;
+            			initComplete();
+					})
+			}
+            function updatedata(url,cp_id,cno,ono_name,sono_name,position,position_star,position_end){
+                window.location=url;
+			    var storage=window.localStorage;
+			    storage['cp_id']=cp_id
+			    storage["cno"]=cno;
+                storage["ono_name"]=ono_name;
+                storage["sono_name"]=sono_name;
+                storage["position"]=position;
+                storage["position_star"]=position_star;
+                storage["position_end"]=position_end;
+            }
+				function deletedata(cp_id) {
 			    // body...
-                $.get(rooturl + "t1_1_d?cno="+cno,function(ret){
+                $.get(rooturl+"t1_2_d?cno="+cp_id,function(ret){
 			            if(ret['success']=='yes'){
 			                loadData()
 			            }else{
@@ -66,49 +83,23 @@
                         }
 			        });
 			}
-			function loadData(){
-           $.get(rooturl+"t1_2_s",function(ret){
-            			gridData.rows=ret;
-            			initComplete();
-					})
-			}
-            function updatedata(url,cno,chinese_name,english_name,cagname,eagname,nation,actor,sex,birth,death){
-                window.location=url;
-			    var storage=window.localStorage;
-			    storage["cno"]=cno;
-                storage["chinese_name"]=chinese_name;
-                storage["english_name"]=english_name;
-                storage["cagname"]=cagname;
-                storage["eagname"]=eagname;
-                storage["nation"]=nation;
-                storage["actor"]=actor;
-                storage["sex"]=sex;
-                storage["birth"]=birth;
-                storage["death"]=death;
-            }
-			function deletedata(me) {
-			    // body...
-			    idnode=me.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode
-			    //.childNodes[0].innerText
-			    cno_name=idnode.childNodes[0].innerText
-			    ono_name=idnode.childNodes[1].innerText
-			    sono_name=idnode.childNodes[2].innerText
-			    position=idnode.childNodes[3].innerText
-			    console.log(cno_name)
-			    //.............................s
-
-			    /*$.get(rooturl+"t1_1_d?cno="+id,function(ret){
-			            if(ret['success']=='yes'){
-			                gridData.rows=gridData.rows.slice(1);
-			                initComplete();
-			            }
-			        });*/
-			}
 
 			function initComplete() {
 				grid = $("#dataBasic").quiGrid({
 					columns: [{
-							display: '人物',
+							display: '编号',
+							name: 'cp_id',
+							width: "5%",
+							cellClick: true
+						},
+					    {
+							display: '人物编号',
+							name: 'cno',
+							width: "10%",
+							cellClick: true
+						},
+                        {
+							display: '人物名称',
 							name: 'cno_name',
 							width: "10%",
 							cellClick: true
@@ -116,16 +107,16 @@
 						{
 							display: '一级组织',
 							name: 'ono_name',
-							width: "15%"
+							width: "10%"
 						},{
 							display: '二级组织',
 							name: 'sono_name',
-							width: "15%"
+							width: "10%"
 						},
                         {
 							display: '具体任职',
 							name: 'position',
-							width: "17%"
+							width: "10%"
 						},     
 						{
 							display: '开始任职时间',
@@ -141,10 +132,10 @@
 							display: '操作',
 							name: 'name',
 							align: 'center',
-							width: 15%,
+                            width: "15%",
 							render: function(rowdata, rowindex, value, column) {
 								var mainCon = $('<div></div>');
-								var con = $('<span class="operation_look" onclick="updatedata()">修改</span><div class="popupMenu popupMenu2"><div class="popupMenu_link"><a href="javascript:;" onclick="deletedata(this)" class="themeBgColor">删除</a></div>');
+								var con = $('<span class="operation_look" onclick="updatedata(\'yq_12_1.html\',\'' + rowdata.cp_id+'\',\'' + rowdata.cno+'\',\'' + rowdata.ono_name+'\',\'' + rowdata.sono_name+'\',\'' + rowdata.position+'\',\'' + rowdata.position_start+'\',\'' + rowdata.position_end+'\')">修改</span><div class="popupMenu popupMenu2"><div class="popupMenu_link"><a href="javascript:;" onclick="deletedata(\'' + rowdata.cp_id+'\')" class="themeBgColor">删除</a></div>');
 								mainCon.append(con);
 								return mainCon.html();
 							}

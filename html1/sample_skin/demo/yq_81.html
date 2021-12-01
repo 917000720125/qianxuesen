@@ -7,7 +7,7 @@
 <script type="text/javascript" src="../../libs/js/jquery.js"></script>
 <script type="text/javascript" src="../../libs/js/language/cn.js"></script>
 <script type="text/javascript" src="../../libs/js/framework.js"></script>
-        <script type="text/javascript" src="../../js/cn.js"></script>
+    <script type="text/javascript" src="../../js/cn.js"></script>
     <script type="text/javascript" src="../../js/getdata.js"></script>
 <link href="../../libs/css/import_basic.css" rel="stylesheet" type="text/css"/>
 <link rel="stylesheet" type="text/css" id="skin" prePath="../../"/>
@@ -21,7 +21,7 @@
 <!-- 日期选择框start -->
 <script type="text/javascript" src="../../libs/js/form/datePicker/WdatePicker.js"></script>
 <!-- 日期选择框end -->
-
+<script src="../../js/echarts.min.js"></script>
 <!--数据表格start-->
 <script src="../../libs/js/table/quiGrid.js" type="text/javascript"></script>
 <!--数据表格end-->
@@ -34,6 +34,32 @@
 		-webkit-user-select: none;
 		-ms-user-select: none;
 	}
+    .black_overlay{
+            display: none;
+            position: absolute;
+            top: 0%;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+            background-color: black;
+            z-index:1001;
+            -moz-opacity: 0.8;
+            opacity:.80;
+            filter: alpha(opacity=88);
+        }
+     .white_content {
+            display: none;
+            position: absolute;
+            top: 25%;
+            left: 25%;
+            width: 55%;
+            height: 55%;
+            padding: 20px;
+            border: 10px solid orange;
+            background-color: white;
+            z-index:1002;
+            overflow: auto;
+        }
 
 	</style>
 </head>
@@ -44,16 +70,24 @@
     <div style="width:50%;">
 		<canvas id="canvas"></canvas>
 	</div>
+       <div id="light" class="white_content">
+           <tr>
+               <td style="text-align: right;padding-right: 20px;">详细内容</td>
+
+                   <textarea id="detailed content"rows="20" cols="100" readonly="readonly"></textarea>
+           </tr>
+<a href = "javascript:void(0)" onclick = "document.getElementById('light').style.display='none';document.getElementById('fade').style.display='none'">返回</a></div>
+        <div id="fade" class="black_overlay"></div>
     <input type="text" class="stepper" id="stepper1" value="100"/><button id="randomizeData">设置横坐标</button>
    
 		<div id="maingrid"></div>
 </div>
 </body>
 	<script>
-
-	var randomScalingFactor = function() {
-			return Math.round(Math.random() * 100);
-		};
+     $.get(rooturl+'emotion_analyse',function(ret){
+			    testData.rows = ret;
+			    initComplete();
+            })
 		var datapoints = [0];
 		var config = {
 			type: 'line',
@@ -61,12 +95,12 @@
 				labels: ['0'],
 				datasets: [
 					{
-					label: 'Linear interpolation',
+					label: '折线统计图',
 					data: datapoints,
 					borderColor: window.chartColors.green,
 					backgroundColor: 'rgba(0, 0, 0, 0)',
 					fill: false,
-					//lineTension: 0
+					lineTension: 0
 				}]
 			},
 			options: {
@@ -100,28 +134,31 @@
 				}
 			}
 		};
-
 		window.onload = function() {
-			var ctx = document.getElementById('canvas').getContext('2d');
-			window.myLine = new Chart(ctx, config);
-			$("#randomizeData").click();
-		};
-        document.getElementById('randomizeData').addEventListener('click', function() {
-            //for (var i = 0, len = datapoints.length; i < len; ++i) {
-            //	datapoints[i] = Math.random() < 0.05 ? NaN : randomScalingFactor();
-            //}
+            var ctx = document.getElementById('canvas').getContext('2d');
+            var datapoints = [0];
+			var mychart = new Chart(ctx, config);
             config.data.labels = [];
             config.data.datasets[0].data = [];
-            for(let i=0;i < testData.rows.length && i <= parseInt($("#stepper1").val());i++){
+            for(let i=0;i<testData.rows.length && i <= parseInt($("#stepper1").val());i++){
                 config.data.labels.push(testData.rows[i]["id"]);
-                config.data.datasets[0].data.push(testData.rows[i]["probability"]*testData.rows[i]["emotional_plus_or_minus"]);
+                if(testData.rows[i]["emotional_plus_or_minus"]=="正向")
+                {
+                    config.data.datasets[0].data.push(testData.rows[i]["probability"]);
+                }
+                if(testData.rows[i]["emotional_plus_or_minus"]=="负向")
+                {
+                    console.log(-1)
+                    config.data.datasets[0].data.push(testData.rows[i]["probability"]*(-1));
+                }
+                if(testData.rows[i]["emotional_plus_or_minus"]=="中立")
+                {
+                    config.data.datasets[0].data.push(0);
+                }
             }
-            window.myLine.update();
-        });
+            mychart.update();
+		};
 
-        
-
-        
 			var testData = {
 				"form.paginate.pageNo": 1,
 				"form.paginate.totalRows": 13,
@@ -138,10 +175,7 @@
 				},]
 			}
 //切换tab
-            $.get(rooturl+'emotion_analyse',function(ret){
-			    testData.rows = ret;
-			    initComplete();
-            })
+
 				$(".condition_tab").find("a").each(function(i) {
 					$(this).click(function() {
 						$(".condition_tab").find("a").removeClass("current");
@@ -207,8 +241,7 @@
 		            }
 		            ] }
 	            ]
-	         }); 
-		
+	         });
 			 g = $("#maingrid").quiGrid({
               columns: [ { display: '新闻编码', name: 'id', align: 'center',  width: "10%"},
                          {
@@ -250,10 +283,10 @@
                         align: 'center',
                         width: "10%"
                     }, { display: '操作', isAllowHide: false, align: 'left', width: 180,
-                        render: function (rowdata, rowindex, value, column){
-                        return '<div class="grid_opp_container">'
-                                   + '<span class="grid_opp_view" onclick="onView(' + rowdata.id + ')">查看详细内容</span>'
-                               + '</div>';
+                       render: function (rowdata, rowindex, value, column){
+                       return '<div class="grid_opp_container">'
+                                  + '<span class="grid_opp_view" onclick=show(\''+ rowdata.id+'\')>查看详细内容</span>'
+                            + '</div>';
                      }}
                        ],
 					data: testData,
@@ -273,26 +306,36 @@
                 } 
             });
 		}
+		function show(id)
+        {
+                // var diag = new top.Dialog();
+                 //diag.Title = "普通窗口";
+                 //diag.URL = "./sample_skin/demo/window-content1.html";
+                 //diag.show();
+                 //var storage=window.localStorage;
+			    //storage["dcid"]=dcid;
+            $.get(rooturl+"show_detailed_content?id="+ id,function(ret){
+                        console.log(ret)
+                        console.log(ret['content'])
+            			document.getElementById('light').style.display='block';
+                        document.getElementById('detailed content').value=ret['content']
+                        document.getElementById('fade').style.display='block'
+					})
+        }
+
          function itemclick(item, i)
         {
             top.Toast("showNoticeToast", "菜单项："+item.text+"，点击行："+userName);
         }
-        
 			$(function() {
-
-
             //初始化关键字文本框
-
 				var value3 = $("#keywords").val();
-
 				if(value3 != "") {
 					var type = "keywords";
 					var i = 4;
 					var $ul = $(".conditionContent").find("ul").eq(i);
 					renderItem2(type, value3, i, $ul);
 				}
-
-
 				$("#keywordsAdd").click(function() {
 					var value = $("#keywords").val();
 					if(value == "") {
@@ -306,7 +349,6 @@
 				})
 
 			})
-
 			//添加条件项
 			function renderItem(instance, i, $ul) {
 				$(".conditionTop_items").show();
@@ -315,7 +357,6 @@
 				$ul.parent().parent().show();
 				$ul.show();
 				resetGridHeight()
-
 				$ul.append($item);
 				//点击条件项
 				$item.click(function() {
@@ -330,11 +371,9 @@
 
 				})
 			}
-
 			//移除条件项
 			function removeItem(instance, $ul) {
 				instance.remove();
-
 				//如果没有条件项了，隐藏整行
 				if($ul.find("li").length == 0) {
 					$ul.parent().parent().hide();
@@ -353,7 +392,6 @@
 					}
 				}
 			}
-
 			function renderItem2(type, value, i, $ul) {
 				$(".conditionTop_items").show();
 
@@ -374,15 +412,11 @@
 					}
 				})
 			}
-
 			function resetGridHeight() {
 				setTimeout(function() {
 					g.resetHeight();
 				}, 500)
 			}
-        
-
-   
 		</script>
 
 </html>

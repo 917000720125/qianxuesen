@@ -37,8 +37,8 @@
 					<table border="0" cellspacing="0" cellpadding="0" class="search_content">
 						<tr>
 							<td>搜索：</td>
-							<td><input type="text" /></td>
-							<td><input type="button" value="搜索" class="" /></td>
+							<td><input type="text" id="seacher"/></td>
+							<td><input type="button" value="搜索" class="" onclick="seach('t1_3_seach',document.getElementById('seacher').value)"/></td>
 						</tr>
 					</table>
 					<div class="clear"></div>
@@ -55,24 +55,40 @@
 				"form.paginate.totalRows": 13,
 				"rows": []
 			}
-			function deletedata(me) {
+			loadData();
+			function deletedata(cs_id) {
 			    // body...
-			    id=me.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.childNodes[0].innerText
-			    subject=me.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.childNodes[1].innerText
-                $.get(rooturl+"t1_3_d?cno="+id+"&amp;subject="+subject,function(ret){
+                $.get(rooturl+"t1_3_d?cs_id="+cs_id,function(ret){
 			            if(ret['success']=='yes'){
-			                gridData.rows=gridData.rows.slice(1);
-			                initComplete();//bug
-			            }
+			                loadData()
+			            }else{
+			                alert(ret['why'])
+                        }
 			        });
 			}
-			$.post(rooturl+"t1_3_s",function(ret){
+			function loadData(){
+           $.post(rooturl+"t1_3_s",function(ret){
             			gridData.rows=ret;
             			initComplete();
 					})
+			}
+			function updatedata(url,cs_id,cno,subject){
+                window.location=url;
+			    var storage=window.localStorage;
+			    storage["cs_id"]=cs_id;
+			    storage["cno"]=cno;
+                storage["subject"]=subject;
+            }
 			function initComplete() {
 				grid = $("#dataBasic").quiGrid({
 					columns: [{
+
+							display: '编号',
+							name: 'cs_id',
+							width: "20%",
+							cellClick: true
+						},{
+
 							display: '人物编号',
 							name: 'cno',
 							width: "20%",
@@ -81,16 +97,16 @@
 						{
 							display: '特征词',
 							name: 'subject',
-							width: "80%"
+							width: "45%"
 						},
 						{
 							display: '操作',
 							name: 'name',
 							align: 'center',
-							width: 200,
+							width: "15%",
 							render: function(rowdata, rowindex, value, column) {
 								var mainCon = $('<div></div>');
-								var con = $('<span class="operation_look" onclick="">修改</span><div class="popupMenu popupMenu2"><div class="popupMenu_link"><a href="javascript:;" onclick="deletedata(this)" "class="themeBgColor">删除</a></div>');
+								var con = $('<span class="operation_look" onclick="updatedata(\'yq_14_1.html\',\'' + rowdata.cs_id+'\',\'' + rowdata.cno+'\',\'' + rowdata.subject+'\')">修改</span><div class="popupMenu popupMenu2"><div class="popupMenu_link"><a href="javascript:;" onclick="deletedata(\'' + rowdata.cs_id+'\')" class="themeBgColor">删除</a></div>');
 								mainCon.append(con);
 								return mainCon.html();
 							}

@@ -1,4 +1,5 @@
-var rooturl="http://127.0.0.1:8000/"
+var rooturl="/"
+
 jQuery(document).ajaxSend(function(event, xhr, settings) {
     function getCookie(name) {
         var cookieValue = null;
@@ -34,7 +35,8 @@ jQuery(document).ajaxSend(function(event, xhr, settings) {
     if (!safeMethod(settings.type) && sameOrigin(settings.url)) {
         xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
     }
-});
+    });
+
 function save(url1,url2,index='') {
     // body...
     //console.log($('#form').serialize())
@@ -61,6 +63,13 @@ function save(url1,url2,index='') {
         }
     });
 }
+function seach(url1,text){
+           console.log('seach')
+             $.get(rooturl+url1+"?text="+text,function(ret){
+            			gridData.rows=ret;
+            			initComplete();
+					})
+            }
 function update(){
 
 }

@@ -1,0 +1,490 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title></title>
+<!--框架必需start-->
+<script type="text/javascript" src="../../libs/js/jquery.js"></script>
+<script type="text/javascript" src="../../libs/js/language/cn.js"></script>
+<script type="text/javascript" src="../../libs/js/framework.js"></script>
+        <script type='text/javascript' src='../../libs/js/form/selectSuggestion.js'></script>
+        <script type="text/javascript" src="../../js/cn.js"></script>
+    <script type="text/javascript" src="../../js/getdata.js"></script>
+<link href="../../libs/css/import_basic.css" rel="stylesheet" type="text/css"/>
+<link rel="stylesheet" type="text/css" id="skin" prePath="../../"/>
+<link rel="stylesheet" type="text/css" id="customSkin"/>
+<!--框架必需end-->
+<script src="../../libs/js/graphical/raphael.js" type="text/javascript"></script>
+<script src="../../libs/js/graphical/popup.js" type="text/javascript"></script>
+<script src="../../libs/js/graphical/chart-column.js" type="text/javascript"></script>
+<script src="../../libs/js/graphical/progress.js" type="text/javascript"></script>
+
+<!-- 日期选择框start -->
+<script type="text/javascript" src="../../libs/js/form/datePicker/WdatePicker.js"></script>
+<!-- 日期选择框end -->
+
+<!--数据表格start-->
+<script src="../../libs/js/table/quiGrid.js" type="text/javascript"></script>
+<!--数据表格end-->
+<script src="../../dist/Chart.min.js"></script>
+<script src="../../utils.js"></script>
+<style>
+	canvas{
+		-moz-user-select: none;
+		-webkit-user-select: none;
+		-ms-user-select: none;
+	}
+
+	</style>
+</head>
+
+<body>
+  <div class="page_content">
+   	<div id="container" style="width: 60%;">
+		<canvas id="canvas" ></canvas>
+	</div>
+	<button id="randomizeData" style="display: none;">Randomize Data</button>
+	<button id="addDataset" style="display: none;">Add Dataset</button>
+	<button id="removeDataset" style="display: none;">Remove Dataset</button>
+	<button id="addData" style="display: none;">Add Data</button>
+	<button id="removeData" style="display: none;">Remove Data</button>
+      <div class="conditionTop">
+		<table width="100%">
+			<tr class="conditionTop_tabs">
+
+                <div class="selectSuggestion" id="suggestion2" keepDefaultStyle="true" showList="true"  prompt="请选择排序" ></div>
+                <input type="button" name="" id="" value="确定" onclick='setList()'/>
+			</tr>
+        </table>
+    </div>
+
+	</div>
+
+
+		<div id="maingrid"></div>
+</div>
+</body>
+	<script>
+
+		var color = Chart.helpers.color;
+        config = {
+            type: 'bar',
+            data: {
+                datasets: [{
+                    lables: "申报人数",
+                    backgroundColor: color(window.chartColors.red).alpha(0.5).rgbString(),
+                    borderColor: window.chartColors.red,
+                    borderWidth: 2,
+                    data: []
+                },
+                {
+                    lables: "成功人数",
+                    backgroundColor: color(window.chartColors.blue).alpha(0.5).rgbString(),
+                    borderColor: window.chartColors.red,
+                    borderWidth: 1,
+                    data: []
+                }]
+            },
+            options: {
+                responsive: true,
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: '职称开课数柱状图'
+                },
+                scales: {
+                    xAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                        }
+                    }],
+                    yAxes: [{
+                        display: true,
+                        scaleStartValue : 0,
+                        scaleLabel: {
+                            display: true,
+                            labelString: '人数'
+                        }
+                    }]
+                }
+            }
+        }
+        $.get(rooturl+'course_title?st=coursenum',function(ret){
+            testData.rows = ret;
+            initComplete();
+             intubiao();
+        })
+         function setList()
+        {
+             type=$('#suggestion2').attr("relText")
+            if(type=="课程数")
+            {
+                type='coursenum'
+            }
+            else if(type=="班级数")
+            {
+                type='classnum'
+            }
+            $.get(rooturl+'course_title?st='+type,function(ret){
+            testData.rows = ret;
+            initComplete();
+             intubiao();
+        })
+        }
+
+        window.onload = function() {
+		    var selData1 = {"list":[{'value':1,"key":'课程数'},{'value':2,"key":'班级数'}]}
+                $("#suggestion2").data("data", selData1)
+                //刷新下拉框
+                $("#suggestion2").render();
+
+        }
+           function intubiao(){
+            var ctx = document.getElementById('canvas').getContext('2d');
+			var mychart = new Chart(ctx, config);
+             config.data.datasets[0].label="课程数"
+             config.data.datasets[1].label="班级数"
+            var lab=[];
+             console.log(testData.rows.length)
+            for(let i=0;i<testData.rows.length;i++){
+                lab[i]=testData.rows[i]["title"]
+                config.data.datasets[0].data[i]=testData.rows[i]['coursenum']
+                config.data.datasets[1].data[i]=testData.rows[i]['classnum']
+            }
+            config.data.labels=lab;
+            mychart.update();
+		};
+
+
+		document.getElementById('randomizeData').addEventListener('click', function() {
+			var zero = Math.random() < 0.2 ? true : false;
+			barChartData.datasets.forEach(function(dataset) {
+				dataset.data = dataset.data.map(function() {
+					return zero ? 0.0 : randomScalingFactor();
+				});
+
+			});
+			window.myBar.update();
+		});
+
+		var colorNames = Object.keys(window.chartColors);
+		document.getElementById('addDataset').addEventListener('click', function() {
+			var colorName = colorNames[barChartData.datasets.length % colorNames.length];
+			var dsColor = window.chartColors[colorName];
+			var newDataset = {
+				label: 'Dataset ' + (barChartData.datasets.length + 1),
+				backgroundColor: color(dsColor).alpha(0.5).rgbString(),
+				borderColor: dsColor,
+				borderWidth: 1,
+				data: []
+			};
+
+			for (var index = 0; index < barChartData.labels.length; ++index) {
+				newDataset.data.push(randomScalingFactor());
+			}
+
+			barChartData.datasets.push(newDataset);
+			window.myBar.update();
+		});
+
+		document.getElementById('addData').addEventListener('click', function() {
+			if (barChartData.datasets.length > 0) {
+				var month = MONTHS[barChartData.labels.length % MONTHS.length];
+				barChartData.labels.push(month);
+
+				for (var index = 0; index < barChartData.datasets.length; ++index) {
+					// window.myBar.addData(randomScalingFactor(), index);
+					barChartData.datasets[index].data.push(randomScalingFactor());
+				}
+
+				window.myBar.update();
+			}
+		});
+
+		document.getElementById('removeDataset').addEventListener('click', function() {
+			barChartData.datasets.pop();
+			window.myBar.update();
+		});
+
+		document.getElementById('removeData').addEventListener('click', function() {
+			barChartData.labels.splice(-1, 1); // remove the label first
+
+			barChartData.datasets.forEach(function(dataset) {
+				dataset.data.pop();
+			});
+
+			window.myBar.update();
+		});
+
+
+
+
+
+
+			var testData = {
+				"form.paginate.pageNo": 1,
+				"form.paginate.totalRows": 13,
+				"rows": [   {
+					"newstime": "18-05-10 11:53",
+					"name": "戴维森",
+					"newsname": "叫嚣“阻止中国控制南海只有靠武力”特朗普“打手”有点狂",
+					"newssource": "央视网新闻",
+					"newscontent": "据外媒报道，美国总统特朗普日前任命四星上将、海军舰队司令部司令菲利普·戴维森接任即将退役的哈里斯上将，担任美军太平洋司令部司令。这意味着戴维森上将在6月正式接管美国这一横亘半个地球的防区，执掌包括第三舰队和第七舰队在内的近40万美军。据美国《新闻周刊》报道，戴维森4月20日向国会提交了一份书面报告，其中大肆渲染中国的“军事威胁”，并且表示“要想阻止中国控制南海”，只有诉诸“武力冲突”这一条路。就在几天前，戴维森已经在参议院军事委员会的听证会上详细阐述了自己对华、对印战略。他强调：将按照2018版国防战略大幅度加强美国在“印太地区”的战略状况。有评论称，在未来的三年内，中国将面对这个似乎比哈里斯更加难缠的对手。那么，为什么选择菲利普·戴维森接掌这个重要角色？他的上任又会给亚太局势带来什么变数？有消息称，一向以强硬著称的日裔海军上将哈里斯有可能被调任到韩国担任美国驻韩国大使。这样的安排让美国对朝鲜半岛的政策走向变得耐人寻味。在当前的亚太局势下，美国为什么要派出两个“强硬派”的人选作为美军在亚太的两个重要人物？他们究竟会怎样诠释特朗普的亚太战略？有评论称，不管是戴维森，还是哈里斯，美国都在让太平洋显得“并不太平”。央视《防务新观察》本期节目邀请了军事问题专家杜文龙和国际问题专家滕建群进行了详细的解析。对于即将接任的戴维森，军事问题专家杜文龙认为，从某种意义上说戴维森好像是哈里斯的一个“影子”。在对华态度上，包括亚太战略上几乎就是一个“双胞胎”的组合方式，所以有人说这叫“强强组合”，意即强硬加强硬的组合方式。就戴维森而言，首先，作为四星上将，他在美国海军中地位比较高；他的任职经历很丰富，现任海军舰队司令部司令，也就是以前的大西洋舰队司令，他还担任过第六舰队的司令；另外他在阿富汗、巴基斯坦包括很多地方都有过作战经验；同时他还处理过像2017年“菲茨杰拉德”号、“麦凯恩”号在亚太地区的撞船事故；他本人还指挥过作战训练。第二，戴维森在各种所谓棘手问题上都表现了自己的独有想法。第三，对华态度很强硬。譬如在南海问题上，戴维森说如果不阻止中国在南海的扩张，今后中国会凭借自己的军力碾压所有周边军力，战争是阻止中国的唯一办法和手段。哈里斯也曾有过这样的言论。从这个角度来看，戴维森的到来，也是在亚太地区美国的一个大符号。国际问题专家滕建群同样认为戴维森和哈里斯有着很多相似的地方。众所周知，最近几任太平洋战区的司令都有中东和欧洲服役的阅历，而且又有参联会工作的经验。在美军看来，戴维森最大的弱点就是作战经验不足。哈里斯在80年代就开始在中东不断进行实战活动，飞行时间有5500多个小时，作战时间有500多个小时，作战经验非常丰富，这些都是戴维森现在无法比拟的，戴维森的优势是自己的战略思维。如果说他能够把思维从中东、从欧洲搬到太平洋来，那么足以显示其是个强有力的军方代表。从现在来看，哈里斯现在转行做外交，戴维森做军事，两个人是互补性非常强的搭配。美国太平洋海军司令部“掌门更替”无疑是特朗普强势搅局亚太的一项重要举措。",
+					"newssubject": "南海事件",
+					"emotionwords": "戴维森4月20日向国会提交了一份书面报告，其中大肆渲染中国的“军事威胁”，并且表示“要想阻止中国控制南海”，只有诉诸“武力冲突”这一条路。就在几天前，戴维森已经在参议院军事委员会的听证会上详细阐述了自己对华、对印战略。他强调：将按照2018版国防战略大幅度加强美国在“印太地区”的战略状况。",
+					"emotion": "负",
+					"grade": "A",
+				},]
+			}
+//切换tab
+
+				$(".condition_tab").find("a").each(function(i) {
+					$(this).click(function() {
+						$(".condition_tab").find("a").removeClass("current");
+						$(this).addClass("current");
+						$(".condition_tab_content").hide();
+						$(".condition_tab_content").eq(i).show();
+
+						resetGridHeight()
+					})
+				})
+
+				$(".condition_tab_content").each(function(i) {
+
+					$(this).find("input:checkbox").each(function() {
+
+						//得到对应的选项容器
+						var $ul = $(".conditionContent").find("ul").eq(i);
+
+						//初始化遍历checkbox
+						if($(this).attr("checked")) {
+
+							//添加条件项
+							renderItem($(this), i, $ul);
+						}
+
+						//checkbox点击时
+						$(this).change(function() {
+							var instance = $(this);
+
+							//checkbox选中
+							if($(this).prop("checked")) {
+								//添加条件项
+								renderItem(instance, i, $ul);
+							}
+							//checkbox取消选中
+							else {
+								$ul.find("li").each(function() {
+									//找到与chekbox对应的条件项
+									if($(this).attr("id") == "item_" + instance.attr("id")) {
+										//移除条件项
+										removeItem($(this), $ul);
+
+									}
+								})
+							}
+						})
+
+					})
+				})
+
+
+			//数据表格使用
+        var g;
+        var menu;
+        var userName;
+		function initComplete(){
+			menu = $.rightClickMenu({ width: 120, items:
+	            [
+	            { text: '查看', click: itemclick , iconClass: 'icon_view', children:
+		            [
+		            { text: '弹窗查看', click: itemclick },
+		            { text: '导出文件', children: [{ text: 'Excel', click: itemclick }, { text: 'Word'}]
+		            }
+		            ] }
+	            ]
+	         });
+
+			 g = $("#maingrid").quiGrid({
+              columns: [{
+						display: '职称',
+						name: 'title',
+						align: 'center',
+						width: "20%"
+					}, {
+						display: '课程数',
+						name: 'coursenum',
+						align: 'center',
+						width: "20%"
+					}, {
+						display: '班级数',
+						name: 'classnum',
+						align: 'center',
+						width: "20%"
+					} ,
+              { display: '操作', isAllowHide: false, align: 'left', width: '30%',
+                       render: function (rowdata, rowindex, value, column){
+                       return '<div class="grid_opp_container">'
+                                  + '<span class="grid_opp_view" onclick=show3(\''+ rowdata.title+'\',)>查看详细信息</span>'
+                            + '</div>';
+                     }}],
+					data: testData,
+					pageSize: 10,
+					rownumbers: false,
+					checkbox: false,
+					percentWidthMode: true,
+					height: '140%',
+					width: "100%",
+                 whenRClickToSelect:true,
+                onContextmenu : function (parm,e)
+                {
+                    userName = parm.data.name;
+                    menu.show({ top: e.pageY, left: e.pageX });
+                    return false;
+                }
+            });
+		}
+		function show(college)
+        {
+               var storage=window.localStorage;
+			    storage["college"]=college;
+                window.location='course_place.html';
+
+        }
+        function show1(college)
+        {
+               var storage=window.localStorage;
+			    storage["college"]=college;
+                window.location='course_renshu.html';
+
+        }
+        function show2(college)
+        {
+               var storage=window.localStorage;
+			    storage["college"]=college;
+			    storage['kind']='college'
+                window.location='course_details.html';
+
+        }
+          function show3(parameter)
+        {
+               var storage=window.localStorage;
+			    storage["parameter"]=parameter;
+			    storage['kind']='title'
+                window.location='course_details.html';
+
+        }
+
+         function itemclick(item, i)
+        {
+            top.Toast("showNoticeToast", "菜单项："+item.text+"，点击行："+userName);
+        }
+			$(function() {
+
+
+
+            //初始化关键字文本框
+
+				var value3 = $("#keywords").val();
+
+				if(value3 != "") {
+					var type = "keywords";
+					var i = 4;
+					var $ul = $(".conditionContent").find("ul").eq(i);
+					renderItem2(type, value3, i, $ul);
+				}
+
+
+				$("#keywordsAdd").click(function() {
+					var value = $("#keywords").val();
+					if(value == "") {
+						alert("请填写关键字！");
+						return;
+					}
+					var type = "keywords";
+					var i = 4;
+					var $ul = $(".conditionContent").find("ul").eq(i);
+					renderItem2(type, value, i, $ul);
+				})
+
+			})
+
+			//添加条件项
+			function renderItem(instance, i, $ul) {
+				$(".conditionTop_items").show();
+
+				var $item = $('<li id="item_' + instance.attr("id") + '" class="item"><a>' + instance.val() + '</a></li>');
+				$ul.parent().parent().show();
+				$ul.show();
+				resetGridHeight()
+
+				$ul.append($item);
+				//点击条件项
+				$item.click(function() {
+					//移除条件项
+					removeItem($(this), $ul);
+                            //将对应的checkbox设为不选中
+                            $(".condition_tab_content").eq(i).find("input:checkbox").each(function() {
+                                                                                          if($(this).attr("id") == instance.attr("id")) {
+                                                                                          $(this).attr("checked", false);
+                                                                                          }
+                                                                                          })
+
+				})
+			}
+
+			//移除条件项
+			function removeItem(instance, $ul) {
+				instance.remove();
+
+				//如果没有条件项了，隐藏整行
+				if($ul.find("li").length == 0) {
+					$ul.parent().parent().hide();
+					$ul.hide();
+					resetGridHeight()
+						//如果所有行都隐藏了，隐藏整体
+					var mainShow = 0;
+					$(".conditionTop_items").find("ul").each(function() {
+						if($(this)[0].style.display == "block") {
+							mainShow = 1;
+						}
+					})
+					if(mainShow == 0) {
+						$(".conditionTop_items").hide();
+						resetGridHeight()
+					}
+				}
+			}
+
+			function renderItem2(type, value, i, $ul) {
+				$(".conditionTop_items").show();
+
+				var $item = $('<li id="item_' + type + '" class="item"><a>' + value + '</a></li>');
+				$ul.parent().parent().show();
+				$ul.show();
+				resetGridHeight()
+
+				$ul.append($item);
+				//点击条件项
+				$item.click(function() {
+					//移除条件项
+					removeItem($(this), $ul);
+
+
+					if(type == "keywords") {
+						$("#keywords").val("");
+					}
+				})
+			}
+
+			function resetGridHeight() {
+				setTimeout(function() {
+					g.resetHeight();
+				}, 500)
+			}
+		</script>
+
+</html>

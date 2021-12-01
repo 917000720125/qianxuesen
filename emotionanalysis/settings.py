@@ -24,7 +24,7 @@ SECRET_KEY = 'eviw*3_uqh4%hz6yc7s^btx_3%1qwfm0er286$jg5khcveqrpq'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['9702.vipgz4.idcfengye.com','127.0.0.1','4r47h05001.qicp.vip']
 
 # Application definition
 
@@ -36,7 +36,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'Emotion',
-    'News',
+    'Conference',
+    'Tevalution',
+    'patoffs',
+    'qianxuesen'
 ]
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -53,7 +56,7 @@ ROOT_URLCONF = 'emotionanalysis.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'html1'),],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -74,9 +77,9 @@ WSGI_APPLICATION = 'emotionanalysis.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',  # 或者使用 mysql.connector.django
-        'NAME': 'Emotionanalysis',
+        'NAME': 'emotionanalysis',
         'USER': 'root',
-        'PASSWORD': 'root',
+        'PASSWORD': 'czyhhueia324726',
         'HOST': 'localhost',
         'PORT': '3306',
     }

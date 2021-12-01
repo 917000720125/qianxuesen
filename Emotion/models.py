@@ -2,24 +2,6 @@ from django.db import models
 
 
 # Create your models here.
-class Nations(models.Model):
-    nno = models.CharField(primary_key=True, max_length=4)
-    nation_chinese = models.CharField(max_length=255)
-    nation_english = models.CharField(max_length=255)
-    geographical_position = models.CharField(max_length=255)
-    economic_situation = models.CharField(max_length=255)
-
-
-class Organization(models.Model):
-    ono = models.CharField(primary_key=True, max_length=5)
-    organization_chinese = models.CharField(max_length=255)
-    organization_english = models.CharField(max_length=255)
-    nno = models.ForeignKey('Nations', on_delete=models.CASCADE)
-    main_duty = models.CharField(max_length=255)
-    organization_type = models.CharField(max_length=255)
-    setup_time = models.DateField(null=True)
-
-
 class User(models.Model):
     userid = models.CharField(primary_key=True, max_length=255)
     password = models.CharField(max_length=255)
@@ -29,124 +11,135 @@ class User(models.Model):
     national = models.CharField(max_length=255)
     telephone = models.CharField(max_length=255)
     address = models.CharField(max_length=255)
+class gp_summary(models.Model):#留学总表
+  id=models.IntegerField(primary_key=True)
+  csc=models.CharField(max_length=10)#csc录取结果（基金委录取,无则没有录取）
+  college=models.CharField(max_length=255)
+  name=models.CharField(max_length=255)
+  s_id=models.CharField(max_length=255)#学号
+  teacher=models.CharField(max_length=255)
+  major=models.CharField(max_length=255)
+  grade=models.CharField(max_length=255)#在读年级
+  type=models.CharField(max_length=255)#联培/学位
+  m_or_d=models.CharField(max_length=255)#硕士/博士
+  country=models.CharField(max_length=255)#拟留学国家
+  university=models.CharField(max_length=255)#大学中文名
+  QS=models.CharField(max_length=10)#QS排名
+  US_NEWS=models.CharField(max_length=10)
+  time_mon=models.IntegerField()#留学时间（月）
+class college_declare(models.Model):#申报人数/学院
+    college=models.CharField(primary_key=True,max_length=10)
+    declare=models.IntegerField()
+    successful= models.IntegerField()
+class grade_declare(models.Model):#申报人数/在读年级
+    grade=models.CharField(primary_key=True,max_length=10)
+    declare=models.IntegerField()
+    successful= models.IntegerField()
+class type_declare(models.Model):#申报人数/联培/学位
+    type=models.CharField(primary_key=True,max_length=10)
+    declare=models.IntegerField()
+    successful= models.IntegerField()
+class time_declare(models.Model):#申报人数/留学期限
+    time=models.IntegerField(primary_key=True)
+    declare=models.IntegerField()
+    successful= models.IntegerField()
+class QS_declare(models.Model):#申报人数/QS
+    QS=models.CharField(primary_key=True,max_length=255)
+    declare=models.IntegerField()
+    successful= models.IntegerField()
+class major_declare(models.Model):#申报人数/专业
+    major=models.CharField(primary_key=True,max_length=255)
+    college=models.CharField(max_length=255)
+    declare=models.IntegerField()
+    successful= models.IntegerField()
+#2020留学申请统计
+class gp_summary20(models.Model):#2020留学总表
+  id=models.IntegerField(primary_key=True)
+  projects=models.CharField(max_length=10)#申请项目
+  college=models.CharField(max_length=255)
+  name=models.CharField(max_length=255)
+  s_id=models.CharField(max_length=255)#学号
+  teacher=models.CharField(max_length=255)
+  major=models.CharField(max_length=255)
+  grade=models.CharField(max_length=255)#在读年级
+  type=models.CharField(max_length=255)#联培/学位
+  m_or_d=models.CharField(max_length=255)#硕士/博士
+  country=models.CharField(max_length=255)#拟留学国家
+  university=models.CharField(max_length=255)#大学中文名
+  QS=models.CharField(max_length=10)#QS排名
+  time_mon=models.IntegerField()#留学时间（月）
+class time_declare20(models.Model):#申报人数/留学期限
+    time=models.IntegerField(primary_key=True)
+    declare=models.IntegerField()
+class QS_declare20(models.Model):#申报人数/QS
+    QS=models.CharField(primary_key=True,max_length=255)
+    declare=models.IntegerField()
+class college_declare20(models.Model):#申报人数/学院
+    college=models.CharField(primary_key=True,max_length=10)
+    declare=models.IntegerField()
+class project_declare20(models.Model):#申报人数/申报项目
+    project=models.CharField(primary_key=True,max_length=10)
+    declare=models.IntegerField()
+#2020留学报送统计
+class gp_summary20_1(models.Model):#2020留学总表
+  id=models.IntegerField(primary_key=True)
+  projects=models.CharField(max_length=10)#申请项目
+  college=models.CharField(max_length=255)
+  name=models.CharField(max_length=255)
+  s_id=models.CharField(max_length=255)#学号
+  teacher=models.CharField(max_length=255)
+  major=models.CharField(max_length=255)
+  grade=models.CharField(max_length=255)#在读年级
+  type=models.CharField(max_length=255)#联培/学位
+  m_or_d=models.CharField(max_length=255)#硕士/博士
+  country=models.CharField(max_length=255)#拟留学国家
+  university=models.CharField(max_length=255)#大学中文名
+  QS=models.CharField(max_length=10)#QS排名
+  time_mon=models.IntegerField()#留学时间（月）
+class time_declare20_1(models.Model):#申报人数/留学期限
+    time=models.IntegerField(primary_key=True)
+    declare=models.IntegerField()
+class QS_declare20_1(models.Model):#申报人数/QS
+    QS=models.CharField(primary_key=True,max_length=255)
+    declare=models.IntegerField()
+class college_declare20_1(models.Model):#申报人数/学院
+    college=models.CharField(primary_key=True,max_length=10)
+    declare=models.IntegerField()
+class project_declare20_1(models.Model):#申报人数/申报项目
+    project=models.CharField(primary_key=True,max_length=10)
+    declare=models.IntegerField()
+#高数成绩统计
+class cj_college(models.Model):
+    college = models.CharField(primary_key=True, max_length=10)
+    fail = models.IntegerField()
+    average= models.FloatField()
+class cj_summary(models.Model):
+    s_id=models.CharField(primary_key=True,max_length=255)
+    s_name=models.CharField(max_length=10)
+    college = models.CharField(max_length=10)
+    major= models.CharField(max_length=20)
+    c_id = models.CharField(max_length=20)
+    c_name = models.CharField(max_length=20)
+    score= models.IntegerField()
+#课程统计
+class course_summary(models.Model):
+    c_id=models.CharField(primary_key=True,max_length=255)
+    c_name=models.CharField(max_length=10)#课程名称
+    college = models.CharField(max_length=10)
+    cl_name=models.CharField(max_length=10)#班级名称
+    t_name=models.CharField(max_length=10)#教师名称
+    t_title=models.CharField(max_length=10)#教师职称
+    Shuodao=models.CharField(max_length=1)#是否是硕导
+    Doctoral_advisor=models.CharField(max_length=1)#是否是博导
+    number=models.IntegerField()
+    place=models.CharField(max_length=10)#上课地点
+class course_coll(models.Model):
+    college=models.CharField(primary_key=True,max_length=10)
+    coursenum=models.IntegerField()
+    classnum= models.IntegerField()
+class course_place(models.Model):
+    id=models.IntegerField(primary_key=True)
+    college = models.CharField( max_length=10)
+    place=models.CharField( max_length=10)
+    classnum = models.IntegerField()
 
-
-'''
-class National_operation(models.Model):
-    userid = models.ForeignKey('User', on_delete=models.CASCADE)
-    # nno = models.ForeignKey('Nations', on_delete=models.CASCADE)
-    time = models.DateTimeField(auto_now_add=True)
-    operation_type = models.CharField(max_length=255)
-
-    class Meta:
-        # unique_together = ("userid", "nno", "time")
-        unique_together = ("userid", "time")
-'''
-
-
-class Basic_information(models.Model):
-    """docstring for character_information"""
-    cno = models.CharField(primary_key=True, max_length=5)
-    chinese_name = models.CharField(max_length=255)
-    english_name = models.CharField(max_length=255, null=True)
-    nno = models.ForeignKey('Nations', on_delete=models.CASCADE)
-    actor = models.CharField(max_length=255)
-    sex = models.CharField(max_length=1, null=True)
-    birth = models.CharField(max_length=255, null=True)
-    death = models.CharField(max_length=255, null=True)
-
-
-class Agname(models.Model):
-    cno = models.ForeignKey(Basic_information, on_delete=models.CASCADE)
-    agname_chinese = models.CharField(max_length=255, null=True)
-    agname_english = models.CharField(max_length=255, null=True)
-
-    class Meta:
-        unique_together = ("cno", "agname_chinese")
-
-
-class Character_subjects(models.Model):
-    cno = models.ForeignKey('Basic_information', on_delete=models.CASCADE)
-    subject = models.CharField(max_length=255)
-
-    class Meta:
-        unique_together = ("cno", "subject")
-
-
-class Contact(models.Model):
-    cno = models.ForeignKey('Basic_information', on_delete=models.CASCADE)
-    contact = models.CharField(max_length=255)
-    contact_type = models.CharField(max_length=255)
-
-    class Meta:
-        unique_together = ("cno", "contact")
-
-
-class Figure_operation(models.Model):
-    userid = models.ForeignKey('User', on_delete=models.CASCADE)
-    # cno = models.ForeignKey('Basic_information', on_delete=models.CASCADE)
-    time = models.DateTimeField(auto_now_add=True)
-    operation_object = models.CharField(max_length=255,default=None)
-    operation_type = models.CharField(max_length=255)
-
-    class Meta:
-        # unique_together = ("userid", "cno", "time")
-        unique_together = ("userid", "time")
-
-
-class S_organization(models.Model):
-    sono = models.CharField(primary_key=True, max_length=7)
-    ono = models.ForeignKey('Organization', on_delete=models.CASCADE)
-    name_chinese = models.CharField(max_length=255)
-    name_english = models.CharField(max_length=255)
-    main_duty = models.CharField(max_length=255, null=True)
-
-
-class S_contact(models.Model):
-    sono = models.ForeignKey('S_organization', on_delete=models.CASCADE)
-    contact = models.CharField(max_length=255)
-    contact_type = models.CharField(max_length=255)
-
-    class Meta:
-        unique_together = ("sono", "contact")
-
-
-class Positions(models.Model):
-    cno = models.ForeignKey('Basic_information', on_delete=models.CASCADE)
-    ono = models.ForeignKey('Organization', on_delete=models.CASCADE)
-    sono = models.ForeignKey('S_organization', on_delete=models.CASCADE, null=True)
-    position = models.CharField(max_length=255)
-    position_start = models.DateField(default=None)
-    position_end = models.DateField(null=True)
-
-    class Meta:
-        unique_together = ("cno", "ono", "sono", "position", "position_start")
-
-
-'''
-class Organization_operation(models.Model):
-    userid = models.ForeignKey('User', on_delete=models.CASCADE)
-    # ono = models.ForeignKey('Organization', on_delete=models.CASCADE)
-    time = models.DateTimeField(auto_now_add=True)
-    operation_type = models.CharField(max_length=255)
-
-    class Meta:
-        # unique_together = ("userid", "ono", "time")
-        unique_together = ("userid", "time")
-'''
-
-
-class Agname_o(models.Model):
-    ono = models.ForeignKey('Organization', on_delete=models.CASCADE)
-    agname = models.CharField(max_length=255)
-
-    class Meta:
-        unique_together = ("ono", "agname")
-
-
-class Agname_os(models.Model):
-    sono = models.ForeignKey('S_organization', on_delete=models.CASCADE)
-    agname = models.CharField(max_length=255)
-
-    class Meta:
-        unique_together = ("sono", "agname")

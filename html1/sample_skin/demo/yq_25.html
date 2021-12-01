@@ -28,7 +28,12 @@
 				</div>
                 <form id="form">
 				<table border="0" cellspacing="0" cellpadding="0" class="announcement_title">
-				
+				   <tr>
+						<td style="text-align: right;padding-right: 20px;">联系方式编号</td>
+						<td>
+							<input type="text" name="s_id" id="s_id" value="" style="width: 400px;" readonly="readonly"/>
+						</td>
+					</tr>
 					<tr>
 						<td style="text-align: right;padding-right: 20px;">组织编号</td>
 						<td>
@@ -65,7 +70,10 @@
 
 		<script type="text/javascript">
 			
-
+          $.get(rooturl+"t2_3_id",function(ret){
+                         console.log(ret['id'])
+            			document.getElementById('s_id').value=ret['id']
+					});
 
 		</script>
 	</body>

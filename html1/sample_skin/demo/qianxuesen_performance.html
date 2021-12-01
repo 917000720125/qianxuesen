@@ -1,0 +1,460 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title></title>
+<!--框架必需start-->
+    </script><script type="text/javascript" src="../../libs/js/echarts.min.js"></script>
+<script type="text/javascript" src="../../libs/js/jquery.js"></script>
+<script type="text/javascript" src="../../libs/js/language/cn.js"></script>
+<script type="text/javascript" src="../../libs/js/framework.js"></script>
+        <script type='text/javascript' src='../../libs/js/form/selectSuggestion.js'></script>
+        <script type="text/javascript" src="../../js/cn.js"></script>
+    <script type="text/javascript" src="../../js/getdata.js"></script>
+<link href="../../libs/css/import_basic.css" rel="stylesheet" type="text/css"/>
+<link rel="stylesheet" type="text/css" id="skin" prePath="../../"/>
+<link rel="stylesheet" type="text/css" id="customSkin"/>
+<!--框架必需end-->
+<script src="../../libs/js/graphical/raphael.js" type="text/javascript"></script>
+<script src="../../libs/js/graphical/popup.js" type="text/javascript"></script>
+<script src="../../libs/js/graphical/chart-column.js" type="text/javascript"></script>
+<script src="../../libs/js/graphical/progress.js" type="text/javascript"></script>
+
+<!-- 日期选择框start -->
+<script type="text/javascript" src="../../libs/js/form/datePicker/WdatePicker.js"></script>
+<!-- 日期选择框end -->
+
+<!--数据表格start-->
+<script src="../../libs/js/table/quiGrid.js" type="text/javascript"></script>
+<!--数据表格end-->
+<script src="../../dist/Chart.min.js"></script>
+<script src="../../utils.js"></script>
+<style>
+	canvas{
+		-moz-user-select: none;
+		-webkit-user-select: none;
+		-ms-user-select: none;
+	}
+
+	</style>
+</head>
+
+<body>
+  <div class="page_content">
+   	<div id="container" style="width: 60%;">
+	</div>
+	</div>
+      <div class="conditionTop">
+          <table width="100%">
+			<tr class="conditionTop_tabs">
+         <!--  <div class="selectSuggestion" id="suggestion1" keepDefaultStyle="true" showList="true"  prompt="学分区间" ></div>
+                 <div class="selectSuggestion" id="suggestion3" keepDefaultStyle="true" showList="true"  prompt="授课教师" ></div>
+                <div class="selectSuggestion" id="suggestion4" keepDefaultStyle="true" showList="true"  prompt="课序号" ></div>
+          <form method="get" action="/qianxuesen_allcourse">
+         <input type="search" name="q" placeholder="搜索" id="seacher" required>
+        <input type="button" value="搜索" class="" onclick="seach('qianxuesen_Getstudent19',document.getElementById('seacher').value)"/>
+    </form>
+    -->
+                 <tr>
+    <input type="button" value="2018-2019-1" class="" onclick="schoolyear('2018-2019-1','qianxuesen_performance')"/>
+    <input type="button" value="2018-2019-2" class="" onclick="schoolyear('2018-2019-2','qianxuesen_performance')"/>
+    <input type="button" value="2019-2020-1" class="" onclick="schoolyear('2019-2020-1','qianxuesen_performance')"/>
+    <input type="button" value="2019-2020-2" class="" onclick="schoolyear('2019-2020-2','qianxuesen_performance')"/>
+    <input type="button" value="2020-2021-1" class="" onclick="schoolyear('2020-2021-1','qianxuesen_performance')"/>
+    <input type="button" value="2020-2021-2" class="" onclick="schoolyear('2020-2021-2','qianxuesen_performance')"/>
+     </tr>
+                <Button id="select"  onclick="javascript:history.back(1);" >返回上一页</button>
+                <!--
+                <div class="selectSuggestion" id="suggestion1" keepDefaultStyle="true" showList="true"  prompt="总人数区间" ></div>
+                <div class="selectSuggestion" id="suggestion2" keepDefaultStyle="true" showList="true"  prompt="钱院人数区间" ></div>
+                -->
+                <h>学号：</h><h id="demo1"></h>&nbsp;&nbsp;
+                <h>学生：</h><h id="demo2"></h>
+			</tr>
+        </table>
+    </div>
+		<div id="maingrid"></div>
+  <!--
+  <p>数据条数：2683</p>
+  -->
+</div>
+</body>
+
+	<script>
+        function schoolyear(year,url1){
+             $.get(rooturl+url1+"?q="+year+"&st_id="+st_id+"&st_name="+st_name,function(ret){
+               //      gridData.rows=ret;
+               var lab=[]
+               var score=[]
+                 var total=0
+            testData.rows = ret;
+                 for(let i=0;i<testData.rows.length;i++) {
+                   lab[i] = testData.rows[i]["key"]
+                   score[i] = testData.rows[i]['number']
+               }
+                     initComplete();
+               })
+        }
+          var storage=window.localStorage;
+           var  st_id =storage.st_id;
+           var  st_name =storage.st_name;
+           document.getElementById("demo1").innerHTML=st_id
+           document.getElementById("demo2").innerHTML=st_name
+           $.get(rooturl+'qianxuesen_performance?st_id='+st_id+"&st_name="+st_name,function(ret){
+            testData.rows = ret;
+            initComplete();
+             intubiao();
+        })
+		var color = Chart.helpers.color;
+        config = {
+            type: 'bar',
+            data: {
+                datasets: [{
+                    lables: "人数",
+                    backgroundColor: color(window.chartColors.red).alpha(0.5).rgbString(),
+                    borderColor: window.chartColors.red,
+                    borderWidth: 2,
+                    data: []
+                }]
+            },
+            options: {
+                animation: {           // 这部分是数值显示的功能实现
+                     onComplete: function () {
+                         var chartInstance = this.chart,
+                             ctx = chartInstance.ctx;
+                         // 以下属于canvas的属性（font、fillStyle、textAlign...）
+                         ctx.font = Chart.helpers.fontString(Chart.defaults.global.defaultFontSize, Chart.defaults.global.defaultFontStyle, Chart.defaults.global.defaultFontFamily);
+                         ctx.fillStyle = "black";
+                         ctx.textAlign = 'center';
+                         ctx.textBaseline = 'bottom';
+                         this.data.datasets.forEach(function (dataset, i) {
+                             var meta = chartInstance.controller.getDatasetMeta(i);
+                             meta.data.forEach(function (bar, index) {
+                                 var data = dataset.data[index];
+                                 ctx.fillText(data, bar._model.x, bar._model.y - 5);
+                             });
+                         });
+                     }
+                 },
+                responsive: true,
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: '论文成果统计'
+                },
+                scales: {
+                    xAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                        }
+                    }],
+                    yAxes: [{
+                        display: true,
+                          ticks: {
+                             stepSize: 1
+                        },
+                        scaleLabel: {
+                            display: true,
+                            labelString: '论文发表人数'
+                        }
+                    }]
+                }
+            }
+        }
+         window.onload = function() {
+           /*   var selData1 = {"list":[{'value':1,"key":'小于15'},{'value':2,"key":'全选'}]}  */
+            /* var selData1 = {"list":[{'value':1,"key":'1'},{'value':2,"key":'2'},{'value':3,"key":'3'},{'value':4,"key":'4'},{'value':5,"key":'5'},
+                                     {'value':6,"key":'6'},{'value':7,"key":'7'},{'value':8,"key":'8'},{'value':9,"key":'9'},{'value':10,"key":'10'},
+                                     {'value':11,"key":'11'},{'value':12,"key":'12'},{'value':13,"key":'13'},{'value':14,"key":'14'},{'value':15,"key":'15'},
+                                     {'value':16,"key":'16'},{'value':17,"key":'17'},{'value':18,"key":'18'},{'value':19,"key":'19'},{'value':20,"key":'20'},
+                                     {'value':21,"key":'全选'}]}*/
+          /*   cl_name="全选"
+             teacher="全选"
+             cl_id="全选"
+
+           */
+          //   cl_name='+cl_name+"&teacher="+teacher+"&cl_id="+cl_id
+
+       /*     $.get(rooturl + 'qianxuesen_Getcourse', function (ret) {
+                var selData = {"list": ret}
+                $("#suggestion1").data("data", selData)
+                //刷新下拉框
+                $("#suggestion1").render();
+            })
+     */
+
+       /*     var selData1 = {"list":[{'value':1,"key":'0~50'},{'value':2,"key":'50~100'},
+                                     {'value':3,"key":'100~200'},{'value':4,"key":'200~'},
+                                     {'value':5,"key":'全选'}]}
+             $("#suggestion1").data("data", selData1)
+                //刷新下拉框
+             $("#suggestion1").render();
+
+        */
+           /*   var selData2 = {"list":[{'value':1,"key":'0~30'},{'value':2,"key":'30~50'},
+                                      {'value':3,"key":'50~80'},{'value':4,"key":'80~'},
+                                      {'value':5,"key":'全选'}]}
+             $("#suggestion2").data("data", selData2)
+                //刷新下拉框
+             $("#suggestion2").render();
+
+            */
+
+
+            /* var selData4= {"list":[{'value':1,"key":'I'},{'value':2,"key":'II'},{'value':3,"key":'III'},{'value':4,"key":'IV'},{'value':5,"key":'物理实验中心'},
+                                     {'value':6,"key":'篮球场'},{'value':7,"key":'逸夫楼'},{'value':8,"key":'全选'}]}
+             $("#suggestion4").data("data", selData4)
+                //刷新下拉框
+             $("#suggestion4").render();*/
+            /*  $.get(rooturl + 'qianxuesen_Getclid', function (ret) {
+                var selData = {"list": ret}
+                $("#suggestion4").data("data", selData)
+                //刷新下拉框
+                $("#suggestion4").render();
+            })
+            */
+
+          /*   week="全选"
+             jieci="全选"
+             teacher=''
+             place=''
+           */
+		   /* $.get(rooturl + 'qianxuesen_Getteacher', function (ret) {
+                var selData = {"list": ret}
+                $("#suggestion3").data("data", selData)
+                //刷新下拉框
+                $("#suggestion3").render();
+            })*/
+          /*  $.get(rooturl + 'qianxuesen_allcourse?cl_name='+cl_name+"&teacher="+teacher+"&cl_id="+cl_id, function (ret) {
+                  var lab=[]
+               var score=[]
+            testData.rows = ret;
+                 for(let i=0;i<testData.rows.length;i++) {
+                   lab[i] = testData.rows[i]["key"]
+                   score[i] = testData.rows[i]['number']
+               }
+            initComplete();
+            })*/
+        }
+
+        //------------------------------------------------------------------------------------------
+/*
+        $("#suggestion1").bind("listSelect", function() {
+            total_credit=$('#suggestion1').attr("relText")
+           // qiannum=$('#suggestion2').attr("relText")
+
+
+            $.get(rooturl + 'qianxuesen_Getxuanke?total_credit='+total_credit, function (ret) {
+                  var lab=[]
+               var score=[]
+            testData.rows = ret;
+                 for(let i=0;i<testData.rows.length;i++) {
+                   lab[i] = testData.rows[i]["key"]
+                   score[i] = testData.rows[i]['number']
+               }
+            initComplete();
+            })
+        })
+/*
+        $("#suggestion2").bind("listSelect", function() {
+            totalnum=$('#suggestion1').attr("relText")
+            qiannum=$('#suggestion2').attr("relText")
+
+            $.get(rooturl + 'qianxuesen_allcourse?totalnum='+totalnum+"&qiannum="+qiannum, function (ret) {
+                  var lab=[]
+               var score=[]
+            testData.rows = ret;
+                 for(let i=0;i<testData.rows.length;i++) {
+                   lab[i] = testData.rows[i]["key"]
+                   score[i] = testData.rows[i]['number']
+               }
+            initComplete();
+            })
+        })
+ */
+     /*   $("#suggestion3").bind("listSelect", function() {
+            cl_name=$('#suggestion1').attr("relText")
+         //   jieci=$('#suggestion2').attr("relText")
+            teacher=$('#suggestion3').attr("relText")
+            cl_ide=$('#suggestion4').attr("relText")
+            $.get(rooturl + 'qianxuesen_allcourse?cl_name='+cl_name+"&teacher="+teacher+"&cl_id="+cl_id, function (ret) {
+                  var lab=[]
+               var score=[]
+            testData.rows = ret;
+                 for(let i=0;i<testData.rows.length;i++) {
+                   lab[i] = testData.rows[i]["key"]
+                   score[i] = testData.rows[i]['number']
+               }
+            initComplete();
+            })
+        })
+
+      */
+       /* $("#suggestion4").bind("listSelect", function() {
+            cl_name=$('#suggestion1').attr("relText")
+       //     jieci=$('#suggestion2').attr("relText")
+            teacher=$('#suggestion3').attr("relText")
+            cl_id=$('#suggestion4').attr("relText")
+            $.get(rooturl + 'qianxuesen_allcourse?cl_name='+cl_name+"&teacher="+teacher+"&cl_id="+cl_id, function (ret) {
+                  var lab=[]
+               var score=[]
+            testData.rows = ret;
+                 for(let i=0;i<testData.rows.length;i++) {
+                   lab[i] = testData.rows[i]["key"]
+                   score[i] = testData.rows[i]['number']
+               }
+            initComplete();
+            })
+        })
+
+        */
+           function intubiao1(){
+            $('#canvas').remove();
+	        $('#container').append('<canvas id="canvas"></canvas>');//清空画布
+            var ctx = document.getElementById('canvas').getContext('2d');
+			var mychart = new Chart(ctx, config);
+             config.data.datasets[0].label="综合成绩"
+            var lab=[];
+            for(let i=0;i<testData.rows.length;i++){
+                lab[i]=testData.rows[i]["key"]
+                config.data.datasets[0].data[i]=testData.rows[i]['number']
+            }
+            config.data.labels=lab;
+            mychart.update();
+		}
+        function intubiao(lab,score){
+               console.log(lab)
+            myChart.setOption(option = {
+        title: {
+            text: '详细评教成绩折线图'
+        },
+        tooltip: {
+            trigger: 'axis'
+        },
+        xAxis: {
+            data:lab,
+           splitLine: {
+                show: true
+            }
+        },
+        yAxis: {
+            splitLine: {
+                show: true
+            }
+        },
+        toolbox: {
+            left: 'center',
+            feature: {
+                dataZoom: {
+                    yAxisIndex: 'none'
+                },
+                restore: {},
+                saveAsImage: {}
+            }
+        },
+        dataZoom: [ {
+            type: 'inside'
+        }],
+        series: {
+            name: '详细评教成绩',
+            type: 'bar',
+            label: {
+                normal: {
+                    show: true,
+                    position: 'top'
+                }
+            },
+            data: score
+        }
+       })
+        }
+
+			var testData = {}
+//切换
+			//数据表格使用
+        var g;
+        var menu;
+        var userName;
+		function initComplete(){
+			 g = $("#maingrid").quiGrid({
+              columns: [{
+						display: '课程名称',
+						name: 'cl_name',
+						align: 'center',
+						width: "10%"
+					}, {
+						display: '课程学分',
+						name: 'cl_credit',
+						align: 'center',
+						width: "10%"
+					},{
+						display: '课程类型',
+						name: 'cl_type',
+						align: 'center',
+						width: "10%"
+					},{
+						display: '课程属性',
+						name: 'cl_attribute',
+						align: 'center',
+						width: "10%"
+					},{
+						display: '学期',
+						name: 'year',
+						align: 'center',
+						width: "10%"
+					},{
+						display: '课程成绩',
+						name: 'cl_performance',
+						align: 'center',
+						width: "10%"
+					},
+
+                 { display: '操作', isAllowHide: false, align: 'center', width: '12%',
+                       render: function (rowdata, rowindex, value, column){
+                       return '<div class="grid_opp_container">'
+                                  + '<span class="grid_opp_view" onclick=show1(\''+ rowdata.cl_cid+'\',\''+ rowdata.cl_id+'\')>查看课程信息</span>'
+                            + '</div>';
+                     }},
+           /*       { display: '操作', isAllowHide: false, align: 'center', width: '12%',
+                       render: function (rowdata, rowindex, value, column){
+                       return '<div class="grid_opp_container">'
+                                  + '<span class="grid_opp_view" onclick=show2(\''+ rowdata.cl_cid+'\',\''+ rowdata.cl_id+'\')>查看钱学森学院学生选课</span>'
+                            + '</div>';
+                     }}
+            */
+                  ],
+					data: testData,
+					pageSize: 10,
+					rownumbers: false,
+					checkbox: false,
+					percentWidthMode: true,
+					width: "100%",
+                    whenRClickToSelect:true,
+             });
+		}
+		function show1(cl_cid,cl_id)
+        {
+               var storage=window.localStorage;
+                storage["cl_cid"]=cl_cid
+                storage["cl_id"]=cl_id
+                window.location='qianxuesen_Getcourse.html';
+        }
+
+        /*
+        function show2(cl_cid,cl_id)
+        {
+               var storage=window.localStorage;
+               storage["cl_cid"]=cl_cid
+               storage["cl_id"]=cl_id
+               window.location='qianxuesen_Getqianst.html';
+        }
+
+         */
+
+		</script>
+
+</html>
+

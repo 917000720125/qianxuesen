@@ -1,0 +1,270 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title></title>
+<!--框架必需start-->
+    </script><script type="text/javascript" src="../../libs/js/echarts.min.js"></script>
+<script type="text/javascript" src="../../libs/js/jquery.js"></script>
+<script type="text/javascript" src="../../libs/js/language/cn.js"></script>
+<script type="text/javascript" src="../../libs/js/framework.js"></script>
+        <script type='text/javascript' src='../../libs/js/form/selectSuggestion.js'></script>
+        <script type="text/javascript" src="../../js/cn.js"></script>
+    <script type="text/javascript" src="../../js/getdata.js"></script>
+<link href="../../libs/css/import_basic.css" rel="stylesheet" type="text/css"/>
+<link rel="stylesheet" type="text/css" id="skin" prePath="../../"/>
+<link rel="stylesheet" type="text/css" id="customSkin"/>
+<!--框架必需end-->
+<script src="../../libs/js/graphical/raphael.js" type="text/javascript"></script>
+<script src="../../libs/js/graphical/popup.js" type="text/javascript"></script>
+<script src="../../libs/js/graphical/chart-column.js" type="text/javascript"></script>
+<script src="../../libs/js/graphical/progress.js" type="text/javascript"></script>
+
+<!-- 日期选择框start -->
+<script type="text/javascript" src="../../libs/js/form/datePicker/WdatePicker.js"></script>
+<!-- 日期选择框end -->
+
+<!--数据表格start-->
+<script src="../../libs/js/table/quiGrid.js" type="text/javascript"></script>
+<!--数据表格end-->
+<script src="../../dist/Chart.min.js"></script>
+<script src="../../utils.js"></script>
+<style>
+	canvas{
+		-moz-user-select: none;
+		-webkit-user-select: none;
+		-ms-user-select: none;
+	}
+
+	</style>
+</head>
+
+<body>
+  <div class="page_content">
+   	<div id="container" style="width: 60%;">
+	</div>
+	</div>
+      <div class="conditionTop">
+          <table width="100%">
+			<tr class="conditionTop_tabs">
+                <div class="selectSuggestion" id="suggestion1" keepDefaultStyle="true" showList="true"  prompt="开课周次" ></div>
+                <div class="selectSuggestion" id="suggestion2" keepDefaultStyle="true" showList="true"  prompt="开课节次" ></div>
+                <Button id="select"  onclick="javascript:history.back(1);" >返回上一页</button>
+			</tr>
+        </table>
+    </div>
+		<div id="maingrid"></div>
+</div>
+</body>
+	<script>
+		var color = Chart.helpers.color;
+		var storage=window.localStorage;
+		var t_college=storage.t_college;
+		var cl_id=storage.cl_id;
+         window.onload = function() {
+              //var selData1 = {"list":[{'value':1,"key":'学院'},{'value':2,"key":'专业'},{'value':3,"key":'学生类别'},{'value':4,"key":'排名'},{'value':5,"key":'发表情况'},{'value':6,"key":'收录期刊'},{'value':7,"key":'刊出时间'}]}
+             var selData1 = {"list":[{'value':1,"key":'1'},{'value':2,"key":'2'},{'value':3,"key":'3'},{'value':4,"key":'4'},{'value':5,"key":'5'},
+                                     {'value':6,"key":'6'},{'value':7,"key":'7'},{'value':8,"key":'8'},{'value':9,"key":'9'},{'value':10,"key":'10'},
+                                     {'value':11,"key":'11'},{'value':12,"key":'12'},{'value':13,"key":'13'},{'value':14,"key":'14'},{'value':15,"key":'15'},
+                                     {'value':16,"key":'16'},{'value':17,"key":'17'},{'value':18,"key":'18'},{'value':19,"key":'19'},{'value':20,"key":'20'},
+                                     {'value':21,"key":'全选'}]}
+             $("#suggestion1").data("data", selData1)
+                //刷新下拉框
+             $("#suggestion1").render();
+             var selData2 = {"list":[{'value':1,"key":'01'},{'value':2,"key":'02'},{'value':3,"key":'03'},{'value':4,"key":'04'},{'value':5,"key":'05'},
+                                     {'value':6,"key":'06'},{'value':7,"key":'07'},{'value':8,"key":'08'},{'value':9,"key":'09'},{'value':10,"key":'10'},
+                                     {'value':11,"key":'11'},{'value':12,"key":'12'},{'value':13,"key":'13'},
+                                     {'value':14,"key":'全选'}]}
+             $("#suggestion2").data("data", selData2)
+                //刷新下拉框
+             $("#suggestion2").render();
+             week="全选"
+             jieci="全选"
+            $.get(rooturl + 'qianxuesen_banji?week='+week+"&jieci="+jieci+"&t_college="+t_college+"&cl_id="+cl_id, function (ret) {
+                  var lab=[]
+               var score=[]
+            testData.rows = ret;
+                 for(let i=0;i<testData.rows.length;i++) {
+                   lab[i] = testData.rows[i]["key"]
+                   score[i] = testData.rows[i]['number']
+               }
+            initComplete();
+            })
+        }
+        $("#suggestion1").bind("listSelect", function() {
+            week=$('#suggestion1').attr("relText")
+            jieci=$('#suggestion2').attr("relText")
+            $.get(rooturl + 'qianxuesen_banji?week='+week+"&jieci="+jieci+"&t_college="+t_college+"&cl_id="+cl_id, function (ret) {
+                  var lab=[]
+               var score=[]
+            testData.rows = ret;
+                 for(let i=0;i<testData.rows.length;i++) {
+                   lab[i] = testData.rows[i]["key"]
+                   score[i] = testData.rows[i]['number']
+               }
+            initComplete();
+            })
+        })
+        $("#suggestion2").bind("listSelect", function() {
+            week=$('#suggestion1').attr("relText")
+            jieci=$('#suggestion2').attr("relText")
+            $.get(rooturl + 'qianxuesen_banji?week='+week+"&jieci="+jieci+"&t_college="+t_college+"&cl_id="+cl_id, function (ret) {
+                  var lab=[]
+               var score=[]
+            testData.rows = ret;
+                 for(let i=0;i<testData.rows.length;i++) {
+                   lab[i] = testData.rows[i]["key"]
+                   score[i] = testData.rows[i]['number']
+               }
+            initComplete();
+            })
+        })
+           function intubiao1(){
+            $('#canvas').remove();
+	        $('#container').append('<canvas id="canvas"></canvas>');//清空画布
+            var ctx = document.getElementById('canvas').getContext('2d');
+			var mychart = new Chart(ctx, config);
+             config.data.datasets[0].label="综合成绩"
+            var lab=[];
+            for(let i=0;i<testData.rows.length;i++){
+                lab[i]=testData.rows[i]["key"]
+                config.data.datasets[0].data[i]=testData.rows[i]['number']
+            }
+            config.data.labels=lab;
+            mychart.update();
+		}
+        function intubiao(lab,score){
+               console.log(lab)
+            myChart.setOption(option = {
+        title: {
+            text: '详细评教成绩折线图'
+        },
+        tooltip: {
+            trigger: 'axis'
+        },
+        xAxis: {
+            data:lab,
+           splitLine: {
+                show: true
+            }
+        },
+        yAxis: {
+            splitLine: {
+                show: true
+            }
+        },
+        toolbox: {
+            left: 'center',
+            feature: {
+                dataZoom: {
+                    yAxisIndex: 'none'
+                },
+                restore: {},
+                saveAsImage: {}
+            }
+        },
+        dataZoom: [ {
+            type: 'inside'
+        }],
+        series: {
+            name: '详细评教成绩',
+            type: 'bar',
+            label: {
+                normal: {
+                    show: true,
+                    position: 'top'
+                }
+            },
+            data: score
+        }
+       })
+        }
+
+			var testData = {}
+//切换
+			//数据表格使用
+        var g;
+        var menu;
+        var userName;
+		function initComplete(){
+			 g = $("#maingrid").quiGrid({
+              columns: [{
+						display: '开课课程',
+						name: 'cl_name',
+						align: 'center',
+						width: "10%",
+                        showTitle:true//当内容过多时，鼠标悬停显示全部内容
+					}, {
+						display: '课程编号',
+						name: 'cl_id',
+						align: 'center',
+						width: "10%",
+                        showTitle:true//当内容过多时，鼠标悬停显示全部内容
+					},{
+						display: '授课老师',
+						name: 't_name',
+						align: 'center',
+						width: "10%",
+                        showTitle:true//当内容过多时，鼠标悬停显示全部内容
+					},{
+						display: '老师所在院校',
+						name: 't_college',
+						align: 'center',
+						width: "10%",
+                        showTitle:true//当内容过多时，鼠标悬停显示全部内容
+					},{
+						display: '星期',
+						name: 'time1',
+						align: 'center',
+						width: "10%",
+                        showTitle:true//当内容过多时，鼠标悬停显示全部内容
+					},{
+						display: '开课节次',
+						name: 'time2',
+						align: 'center',
+						width: "10%",
+                        showTitle:true//当内容过多时，鼠标悬停显示全部内容
+					},{
+						display: '上课地点',
+						name: 'place',
+						align: 'center',
+						width: "10%",
+                        showTitle:true//当内容过多时，鼠标悬停显示全部内容
+					},{
+						display: '周次',
+						name: 'week',
+						align: 'center',
+						width: "10%",
+                        showTitle:true//当内容过多时，鼠标悬停显示全部内容
+					},{
+						display: '单双周',
+						name: 'sord',
+						align: 'center',
+						width: "10%",
+                        showTitle:true//当内容过多时，鼠标悬停显示全部内容
+					},{ display: '操作', isAllowHide: false, align: 'center', width: '10%',
+                       render: function (rowdata, rowindex, value, column){
+                       return '<div class="grid_opp_container">'
+                                  + '<span class="grid_opp_view" onclick=show(\''+ rowdata.cl_id+'\')>查看教师所在学院</span>'
+                            + '</div>';
+                     }}
+                  ],
+					data: testData,
+					pageSize: 10,
+					rownumbers: false,
+					checkbox: false,
+					percentWidthMode: true,
+					width: "100%",
+                    whenRClickToSelect:true,
+             });
+		}
+		function show(parameter)
+        {
+               var storage=window.localStorage;
+                storage["parameter"]=parameter
+                window.location='qianxuesen_t_college.html';
+        }
+
+		</script>
+
+</html>

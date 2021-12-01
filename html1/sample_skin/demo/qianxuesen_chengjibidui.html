@@ -1,0 +1,156 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title></title>
+<!--框架必需start-->
+    </script><script type="text/javascript" src="../../libs/js/echarts.min.js"></script>
+<script type="text/javascript" src="../../libs/js/jquery.js"></script>
+<script type="text/javascript" src="../../libs/js/language/cn.js"></script>
+<script type="text/javascript" src="../../libs/js/framework.js"></script>
+        <script type='text/javascript' src='../../libs/js/form/selectSuggestion.js'></script>
+        <script type="text/javascript" src="../../js/cn.js"></script>
+    <script type="text/javascript" src="../../js/getdata.js"></script>
+<link href="../../libs/css/import_basic.css" rel="stylesheet" type="text/css"/>
+<link rel="stylesheet" type="text/css" id="skin" prePath="../../"/>
+<link rel="stylesheet" type="text/css" id="customSkin"/>
+<!--框架必需end-->
+<script src="../../libs/js/graphical/raphael.js" type="text/javascript"></script>
+<script src="../../libs/js/graphical/popup.js" type="text/javascript"></script>
+<script src="../../libs/js/graphical/chart-column.js" type="text/javascript"></script>
+<script src="../../libs/js/graphical/progress.js" type="text/javascript"></script>
+
+<!-- 日期选择框start -->
+<script type="text/javascript" src="../../libs/js/form/datePicker/WdatePicker.js"></script>
+<!-- 日期选择框end -->
+
+<!--数据表格start-->
+<script src="../../libs/js/table/quiGrid.js" type="text/javascript"></script>
+<!--数据表格end-->
+<script src="../../dist/Chart.min.js"></script>
+<script src="../../utils.js"></script>
+<style>
+	canvas{
+		-moz-user-select: none;
+		-webkit-user-select: none;
+		-ms-user-select: none;
+	}
+
+	</style>
+</head>
+
+<body>
+  <div class="page_content">
+   	<div id="container" style="width: 60%;">
+		<canvas id="canvas" width="1000" height="400" ></canvas>
+	</div>
+	</div>
+      <div class="conditionTop">
+          <table width="100%">
+			<tr class="conditionTop_tabs">
+                <Button id="select"  onclick="javascript:history.back(1);" >返回上一页</button>
+			</tr>
+        </table>
+    </div>
+		<div id="maingrid"></div>
+</div>
+</body>
+	<script>
+		var color = Chart.helpers.color;
+        var myChart = echarts.init(document.getElementById('canvas'));
+         window.onload = function() {
+            $.get(rooturl + 'qianxuesen_chengjibidui', function (ret) {
+                var lab=[]
+               var score=[]
+            testData.rows = ret;
+                 for(let i=0;i<testData.rows.length;i++) {
+                   lab[i] = testData.rows[i]["cname"]
+                   score[i] = testData.rows[i]['number']
+               }
+            initComplete();
+            intubiao(lab,score);
+            })
+        }
+        function intubiao(lab,score){
+             myChart.setOption(option = {
+        title: {
+            text: '不及格课程统计'
+        },
+    tooltip: {
+        trigger: 'axis',
+        axisPointer: {            // 坐标轴指示器，坐标轴触发有效
+            type: 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+        },
+    }, legend: {
+        data: ['人数']
+    }, xAxis: {
+            type: 'category',
+            data:lab,
+        },
+        yAxis: {
+               type: 'value'
+        },
+        dataZoom: [ {
+            type: 'inside'
+        }],
+        series: {
+            name: '开课数',
+            type: 'bar',
+            label: {
+                show: true,
+                position: 'top'
+            },
+            data: score
+        }
+       })
+        }
+
+			var testData = {}
+//切换
+			//数据表格使用
+        var g;
+        var menu;
+        var userName;
+		function initComplete(){
+			 g = $("#maingrid").quiGrid({
+              columns: [{
+						display: '课程号',
+						name: 'cid',
+						align: 'center',
+						width: "20%"
+					},{
+						display: '课程名',
+						name: 'cname',
+						align: 'center',
+						width: "20%"
+					}, {
+						display: '未选数',
+						name: 'number',
+						align: 'center',
+						width: "20%"
+					},{ display: '操作', isAllowHide: false, align: 'center', width: '20%',
+                       render: function (rowdata, rowindex, value, column){
+                       return '<div class="grid_opp_container">'
+                                  + '<span class="grid_opp_view" onclick=show(\''+ rowdata.cid+'\')>查看详情</span>'
+                            + '</div>';
+                     }}
+                  ],
+					data: testData,
+					pageSize: 10,
+					rownumbers: false,
+					checkbox: false,
+					percentWidthMode: true,
+					width: "100%",
+                    whenRClickToSelect:true,
+             });
+		}
+		function show(parameter)
+        {
+               var storage=window.localStorage;
+                storage["cl_cid"]=parameter
+                window.location='qianxuesen_fanganbidui_st.html';
+        }
+
+		</script>
+
+</html>

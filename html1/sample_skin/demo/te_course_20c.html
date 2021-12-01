@@ -1,0 +1,304 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title></title>
+<!--框架必需start-->
+<script type="text/javascript" src="../../libs/js/jquery.js"></script>
+<script type="text/javascript" src="../../libs/js/language/cn.js"></script>
+<script type="text/javascript" src="../../libs/js/framework.js"></script>
+        <script type='text/javascript' src='../../libs/js/form/selectSuggestion.js'></script>
+        <script type="text/javascript" src="../../js/cn.js"></script>
+    <script type="text/javascript" src="../../js/getdata.js"></script>
+<link href="../../libs/css/import_basic.css" rel="stylesheet" type="text/css"/>
+<link rel="stylesheet" type="text/css" id="skin" prePath="../../"/>
+<link rel="stylesheet" type="text/css" id="customSkin"/>
+<!--框架必需end-->
+<script src="../../libs/js/graphical/raphael.js" type="text/javascript"></script>
+<script src="../../libs/js/graphical/popup.js" type="text/javascript"></script>
+<script src="../../libs/js/graphical/chart-column.js" type="text/javascript"></script>
+<script src="../../libs/js/graphical/progress.js" type="text/javascript"></script>
+
+<!-- 日期选择框start -->
+<script type="text/javascript" src="../../libs/js/form/datePicker/WdatePicker.js"></script>
+<!-- 日期选择框end -->
+
+<!--数据表格start-->
+<script src="../../libs/js/table/quiGrid.js" type="text/javascript"></script>
+<!--数据表格end-->
+<script src="../../dist/Chart.min.js"></script>
+<script src="../../utils.js"></script>
+<style>
+	canvas{
+		-moz-user-select: none;
+		-webkit-user-select: none;
+		-ms-user-select: none;
+	}
+	</style>
+</head>
+<body>
+  <div class="page_content">
+   	<div id="container" style="width: 100%;">
+		<canvas id="canvas"  width="2000" height="800" ></canvas>
+	</div>
+	</div>
+    <div class="conditionTop">
+		<table width="100%">
+			<tr class="conditionTop_tabs">
+                <div class="selectSuggestion" id="suggestion2" keepDefaultStyle="true" showList="true"  prompt="课程类型" ></div>
+                <input type="button" name="" id="" value="确定" onclick='setList()'/>
+            </tr>
+
+
+        </table>
+    </div>
+    <div class="conditionTop">
+          <table width="100%">
+            <tr class="conditionTop_tabs">
+                <div class="selectSuggestion" id="suggestion3" keepDefaultStyle="true" showList="true"  prompt="课程名称" ></div>
+                <input type="text" id="inp1" />左区间</td>
+                <input type="text" id="inp2"/>右区间</td>
+                <input type="button" name="" id="" value="查询" onclick='run()'/>
+            	</tr>
+		</table>
+	</div>
+		<div id="maingrid"></div>
+</div>
+</body>
+	<script>
+        var storage=window.localStorage
+        var kind=storage.kind;
+        var  parameter=storage.college;
+        var testData={}
+        te_course_title=parameter+'教学评价统计图'
+		var color = Chart.helpers.color;
+        config = {
+            type: 'bar',
+            data: {
+                datasets: [{
+                    lables: "综合成绩",
+                    backgroundColor: color(window.chartColors.red).alpha(0.5).rgbString(),
+                    borderColor: window.chartColors.red,
+                    borderWidth: 2,
+                    data: []
+                }]
+            },
+            options: {
+                animation: {           // 这部分是数值显示的功能实现
+                     onComplete: function () {
+                         var chartInstance = this.chart,
+                             ctx = chartInstance.ctx;
+                         // 以下属于canvas的属性（font、fillStyle、textAlign...）
+                         ctx.font = Chart.helpers.fontString(Chart.defaults.global.defaultFontSize, Chart.defaults.global.defaultFontStyle, Chart.defaults.global.defaultFontFamily);
+                         ctx.fillStyle = "black";
+                         ctx.textAlign = 'center';
+                         ctx.textBaseline = 'bottom';
+                         this.data.datasets.forEach(function (dataset, i) {
+                             var meta = chartInstance.controller.getDatasetMeta(i);
+                             meta.data.forEach(function (bar, index) {
+                                 var data = dataset.data[index];
+                                 ctx.fillText(data, bar._model.x, bar._model.y - 5);
+                             });
+                         });
+                     }
+                 },
+                responsive: true,
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: te_course_title
+                },
+                scales: {
+                    xAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                        }
+                    }],
+                    yAxes: [{
+                        display: true,
+                         ticks: {
+                          suggestedMin: 80,
+                          suggestedMax: 90,
+                             stepSize: 1
+                        },
+                        scaleLabel: {
+                            display: true,
+                            labelString: '综合成绩'
+                        }
+                    }]
+                }
+            }
+        }
+        window.onload = function() {
+		    var selData1 = {"list":[{'value':1,"key":'硕士'},{'value':2,"key":'博士'},{'value':3,"key":'L'},{'value':4,"key":'英文'},{'value':5,"key":'中文'},{'value':6,"key":'所有课程'}]}
+            $("#suggestion2").data("data", selData1)
+            //刷新下拉框
+            $("#suggestion2").render();
+		    $.get(rooturl + 'TE_Getlist?college='+parameter+'&ctype=所有课程', function (ret) {
+                var selData = {"list": ret}
+                console.log(selData)
+                $("#suggestion3").data("data", selData)
+                //刷新下拉框
+                $("#suggestion3").render();
+            })
+            $.get(rooturl+'TE_course_20c?college='+parameter+'&project=所有课程'+'&cname='+"&fstart="+''+"&fend="+'',function(ret){
+            testData.rows = ret;
+            initComplete();
+            intubiao();
+        })
+        }
+
+        function setList()
+        {
+            type=$('#suggestion2').attr("relText")
+           $.get(rooturl + 'TE_Getlist?college='+parameter+'&ctype='+type, function (ret) {
+                var selData = {"list": ret}
+                console.log(selData)
+                $("#suggestion3").data("data", selData)
+                //刷新下拉框
+                $("#suggestion3").render();
+            })
+        }
+
+        function run()
+        {
+             project=$('#suggestion2').attr("relText")
+             cname=$('#suggestion3').attr("relText")
+             fstart=document.getElementById('inp1').value
+             fend=document.getElementById('inp2').value
+            $.get(rooturl+'TE_course_20c?college='+parameter+'&project='+project+'&cname='+cname+"&fstart="+fstart+"&fend="+fend,function(ret){
+                console.log(ret)
+            testData.rows = ret;
+            initComplete();
+            intubiao();
+        })
+        }
+        function intubiao(){
+            $('#canvas').remove();
+	        $('#container').append('<canvas id="canvas"></canvas>');//清空画布
+            var ctx = document.getElementById('canvas').getContext('2d');
+			var mychart = new Chart(ctx, config);
+             config.data.datasets[0].label="综合成绩"
+            var lab=[];
+            for(let i=0;i<testData.rows.length;i++){
+                lab[i]=testData.rows[i]["c_name"]
+                config.data.datasets[0].data[i]=testData.rows[i]['ave_score']
+            }
+            config.data.labels=lab;
+            mychart.update();
+		};
+
+
+
+//切换tab
+
+
+			//数据表格使用
+        var g;
+        var menu;
+        var userName;
+		function initComplete()
+        {
+			 g = $("#maingrid").quiGrid({
+              columns: [{
+						display: '课程编号',
+						name: 'c_id',
+						align: 'center',
+						width: "20%",
+                       showTitle:true
+					}, {
+						display: '课程名称',
+						name: 'c_name',
+						align: 'center',
+						width: "20%",
+                       showTitle:true//当内容过多时，鼠标悬停显示全部内容
+					},{
+						display: '综合成绩',
+						name: 'ave_score',
+						align: 'center',
+						width: "20%",
+
+					},{ display: '操作', isAllowHide: false, align: 'center', width: '20%',
+                       render: function (rowdata, rowindex, value, column){
+                       return '<div class="grid_opp_container">'
+                                  + '<span class="grid_opp_view" onclick=show(\''+ rowdata.c_id+'\')>查看详情</span>'
+                            + '</div>';
+                     }}
+                  ],
+					data: testData,
+					pageSize: 10,
+					rownumbers: false,
+					checkbox: false,
+					percentWidthMode: true,
+					width: "100%",
+                    whenRClickToSelect:true,
+                 onContextmenu : function (parm,e)
+                {
+                    userName = parm.data.name;
+                    menu.show({ top: e.pageY, left: e.pageX });
+                    return false;
+                }
+            });
+		}
+		function show(c_id)
+        {
+               var storage=window.localStorage;
+                storage["kind"]='course'
+			    storage["parameter"]=c_id;
+                window.location='te_class_20c.html';
+        }
+         function itemclick(item, i)
+        {
+            top.Toast("showNoticeToast", "菜单项："+item.text+"，点击行："+userName);
+        }
+           $(function() {
+            //初始化关键字文本框
+				var value3 = $("#keywords").val();
+				if(value3 != "") {
+					var type = "keywords";
+					var i = 4;
+					var $ul = $(".conditionContent").find("ul").eq(i);
+					renderItem2(type, value3, i, $ul);
+				}
+				$("#keywordsAdd").click(function() {
+					var value = $("#keywords").val();
+					if(value == "") {
+						alert("请填写关键字！");
+						return;
+					}
+					var type = "keywords";
+					var i = 4;
+					var $ul = $(".conditionContent").find("ul").eq(i);
+					renderItem2(type, value, i, $ul);
+				})
+
+			})
+
+			function renderItem2(type, value, i, $ul) {
+				$(".conditionTop_items").show();
+				var $item = $('<li id="item_' + type + '" class="item"><a>' + value + '</a></li>');
+				$ul.parent().parent().show();
+				$ul.show();
+				resetGridHeight()
+				$ul.append($item);
+				//点击条件项
+				$item.click(function() {
+					//移除条件项
+					removeItem($(this), $ul);
+					if(type == "keywords") {
+						$("#keywords").val("");
+					}
+				})
+			}
+			function resetGridHeight() {
+				setTimeout(function() {
+					g.resetHeight();
+				}, 500)
+			}
+
+		</script>
+
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>人物相关特征词</title>
+		<!--框架必需start-->
+		<script type="text/javascript" src="../../libs/js/jquery.js"></script>
+		<script type="text/javascript" src="../../libs/js/language/cn.js"></script>
+		<script type="text/javascript" src="../../libs/js/framework.js"></script>
+        <script type="text/javascript" src="../../js/cn.js"></script>
+        <script type="text/javascript" src="../../js/getdata.js"></script>
+		<link href="../../libs/css/import_basic.css" rel="stylesheet" type="text/css" />
+		<link rel="stylesheet" type="text/css" id="skin" prePath="../../" />
+		<link rel="stylesheet" type="text/css" id="customSkin" />
+		<!--框架必需end-->
+		<link rel="stylesheet" type="text/css" href="style/style.css" />
+
+		<!-- 日历 -->
+		<script type="text/javascript" src="../../libs/js/form/datePicker/WdatePicker.js"></script>
+	</head>
+
+	<body>
+		<div class="page_content">
+			<div class="infoCard" style="">
+				<div class="title">
+					<span>人物相关特征词</span>
+				</div>
+                <form id="form" onsubmit="return false" action="##" method="post">
+				<table border="0" cellspacing="0" cellpadding="0" class="announcement_title">
+
+                   <tr>
+						<td style="text-align: right;padding-right: 20px;">编号</td>
+						<td>
+							<input type="text" name="cs_id" id="cs_id" value="" style="width: 400px;" readonly="readonly"/>
+						</td>
+					</tr>
+					<tr>
+
+						<td style="text-align: right;padding-right: 20px;">人物编号</td>
+						<td>
+							<input type="text" name="cno" id="cno" value="" style="width: 400px;" />
+						</td>
+					</tr>
+					<tr>
+						<td style="text-align: right;padding-right: 20px;">特征词</td>
+						<td>
+							<input type="text" name="subject" id="subject" value="" style="width: 400px;"/>
+						</td>
+					</tr>
+
+
+						<tr>
+						<td style="text-align: right;padding-right: 20px;border: 0;"></td>
+						<td style="border: 0;">
+							<input type="button" name="" id="" value="取 消" onclick="window.location='yq_14.html'"/>
+							<input type="button" name="" id="" value="保 存" onclick="save('t1_3_i','/html/sample_skin/demo/yq_14.html')" class="primary"/>
+						</td>
+					</tr>
+				</table>
+                </form>
+			</div>
+		</div>
+
+		<script type="text/javascript">
+			init();
+            function init(){
+                var storage=window.localStorage
+                 document.getElementById('cs_id').value=storage.cs_id;
+                document.getElementById('cno').value=storage.cno;
+                document.getElementById('subject').value=storage.subject;
+            }
+
+
+		</script>
+	</body>
+
+</html>

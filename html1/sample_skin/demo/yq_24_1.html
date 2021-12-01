@@ -3,7 +3,7 @@
 
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-		<title>组织联系方式录入</title>
+		<title>组织联系方式修改</title>
 		<!--框架必需start-->
 		<script type="text/javascript" src="../../libs/js/jquery.js"></script>
 		<script type="text/javascript" src="../../libs/js/language/cn.js"></script>
@@ -28,7 +28,12 @@
 				</div>
                 <form id="form">
 				<table border="0" cellspacing="0" cellpadding="0" class="announcement_title">
-
+                    <tr>
+						<td style="text-align: right;padding-right: 20px;">联系方式编号</td>
+						<td>
+							<input type="text" name="id" id="s_id" value="" style="width: 400px;" readonly="readonly"/>
+						</td>
+					</tr>
 					<tr>
 						<td style="text-align: right;padding-right: 20px;">组织编号</td>
 						<td>
@@ -67,9 +72,10 @@
             init();
             function init(){
                 var storage=window.localStorage
+                document.getElementById('s_id').value=storage.s_id;
                 document.getElementById('sono').value=storage.sono;
-                document.getElementById('contact').value=storage.contact;
-                document.getElementById('contact_type').value=storage.contact_type;
+                document.getElementById('contact').value=storage.s_contact;
+                document.getElementById('contact_type').value=storage.s_contact_type;
             }
 
 

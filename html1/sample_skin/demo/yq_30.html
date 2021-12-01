@@ -36,8 +36,8 @@
 					<table border="0" cellspacing="0" cellpadding="0" class="search_content">
 						<tr>
 							<td>搜索：</td>
-							<td><input type="text" /></td>
-							<td><input type="button" value="搜索" class="" onclick="seach()"/></td>
+							<td><input type="text" id="seacher" /></td>
+							<td><input type="button" value="搜索" class="" onclick="seach('t3_1_seach',document.getElementById('seacher').value)"/></td>
 						</tr>
 					</table>
 					<div class="clear"></div>
@@ -65,7 +65,6 @@
 			        });
 			}
 			function updatedata(url1,nno,chinese,english,position,economic){
-			    alert('update')
                 window.location=url1;
 			    var storage=window.localStorage;
 			    storage["nno"]=nno;
@@ -147,7 +146,7 @@
 			function SKU_list(){
 				window.location='oa_26.html';
 			}
-			
+
 		</script>
 	</body>
 

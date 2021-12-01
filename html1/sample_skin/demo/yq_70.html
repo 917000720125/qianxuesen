@@ -37,8 +37,8 @@
 					<table border="0" cellspacing="0" cellpadding="0" class="search_content">
 						<tr>
 							<td>搜索：</td>
-							<td><input type="text" /></td>
-							<td><input type="button" value="搜索" class="" /></td>
+							<td><input type="text" id="seacher" /></td>
+							<td><input type="button" value="搜索" class="" onclick="seach('seach_source',document.getElementById('seacher').value)" /></td>
 						</tr>
 					</table>
 					<div class="clear"></div>
@@ -109,7 +109,7 @@
 							//width: 170,
 							render: function(rowdata, rowindex, value, column) {
 								var mainCon = $('<div></div>');
-								var con = $('<span class="operation_look" onclick="updatedata(\'yq_70_1.html\',\'' + rowdata.id+'\',\'' + rowdata.name+'\',\'' + rowdata.url+'\')">修改</span><div class="popupMenu popupMenu2"><div class="popupMenu_link"><a href="javascript:;"onclick="deletedata(\'' + rowdata.id+'\')" class="themeBgColor">删除</a></div>');
+								var con = $('<span class="operation_look" onclick="updatedata(\'yq_70_2.html\',\'' + rowdata.id+'\',\'' + rowdata.name+'\',\'' + rowdata.url+'\')">修改</span><div class="popupMenu popupMenu2"><div class="popupMenu_link"><a href="javascript:;"onclick="deletedata(\'' + rowdata.id+'\')" class="themeBgColor">删除</a></div>');
 								mainCon.append(con);
 								return mainCon.html();
 							}

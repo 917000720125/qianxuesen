@@ -38,8 +38,8 @@
 					<table border="0" cellspacing="0" cellpadding="0" class="search_content">
 						<tr>
 							<td>搜索：</td>
-							<td><input type="text" /></td>
-							<td><input type="button" value="搜索" class="" /></td>
+							<td><input type="text" id="seacher" /></td>
+							<td><input type="button" value="搜索" class="" onclick="seach('t1_1_seach',document.getElementById('seacher').value)"/></td>
 						</tr>
 					</table>
 					<div class="clear"></div>
@@ -49,6 +49,17 @@
 		</div>
 
 		<script type="text/javascript">
+            window.alert = function (name)
+            {   
+                const iframe = document.createElement('IFRAME');       
+               iframe.style.display = 'none';       
+               iframe.setAttribute('src', 'data:text/plain,');       
+               document.documentElement.appendChild(iframe);       
+               window.frames[0].window.alert(name);       
+               iframe.parentNode.removeChild(iframe); 
+              };
+
+
 			var grid = null;
 			//数据表格使用
 			var gridData = {
@@ -167,7 +178,14 @@
 
 				});
 			}
-
+function seach(url1,text){
+           console.log('seach')
+       alert('aaa')
+             $.get(rooturl+url1+"?text="+text,function(ret){
+            			gridData.rows=ret;
+            			initComplete();
+					})
+            }
 
 			function onAfterShowData(data) {
 

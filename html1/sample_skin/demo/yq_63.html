@@ -7,6 +7,7 @@
 <script type="text/javascript" src="../../libs/js/jquery.js"></script>
 <script type="text/javascript" src="../../libs/js/language/cn.js"></script>
 <script type="text/javascript" src="../../libs/js/framework.js"></script>
+        <script type='text/javascript' src='../../libs/js/form/selectSuggestion.js'></script>
         <script type="text/javascript" src="../../js/cn.js"></script>
     <script type="text/javascript" src="../../js/getdata.js"></script>
 <link href="../../libs/css/import_basic.css" rel="stylesheet" type="text/css"/>
@@ -40,71 +41,30 @@
 <body>
   <div class="page_content">	
    	<div id="container" style="width: 60%;">
-		<canvas id="canvas"></canvas>
+		<canvas id="canvas" ></canvas>
 	</div>
 	<button id="randomizeData" style="display: none;">Randomize Data</button>
 	<button id="addDataset" style="display: none;">Add Dataset</button>
 	<button id="removeDataset" style="display: none;">Remove Dataset</button>
 	<button id="addData" style="display: none;">Add Data</button>
 	<button id="removeData" style="display: none;">Remove Data</button>
-    <div class="conditionTop">
+      <div class="conditionTop">
 		<table width="100%">
-			<tr class="conditionTop_items">
-				<td width="80" style="vertical-align:top;padding-top:5px;"><span class="conditionTop_title">已选条件：</span></td>
-				<td style="text-align:left;padding-top:5px;">
-					<div class="conditionContent">
-						<table width="100%" cellpadding="0" cellspacing="0">
-                            <tr>
-								<td width="100">
-									<li class="condiComplexSubTitle">热点事件：</li>
-								</td>
-								<td>
-									<ul></ul>
-								</td>
-							</tr>
-							<tr>
-								<td width="100">
-									<li class="condiComplexSubTitle">时间段：</li>
-								</td>
-								<td>
-									<ul></ul>
-								</td>
-							</tr>
-						</table>
-					</div>
-				</td>
-			</tr>
 			<tr class="conditionTop_tabs">
-				<td width="80"><span class="conditionTop_title">条件选择：</span></td>
-				<td style="text-align:left;">
-					<ul class="condition_tab">
-						<li>
-							<a>热点事件</a>
-						</li>
-						<li>
-							<a>时间段</a>
-						</li>
-					</ul>
-				</td>
-			</tr>
-		</table>
-		<div class="condition_tab_content">
-            <table>
-                <tr>
-                    <td><input type="text" class="textinput" id="keywords" /></td>
-                    <td><input type="button" value="确 定" class="button" id="keywordsAdd" /></td>
-                </tr>
-            </table>
-		</div>
 
-		<div class="condition_tab_content">
-            <table>
-                <tr>
-                    <td><input type="text" class="textinput" id="keywords" /></td>
-                    <td><input type="button" value="确 定" class="button" id="keywordsAdd" /></td>
-                </tr>
-            </table>
-		</div>
+                <div class="selectSuggestion" id="suggestion2" keepDefaultStyle="true" showList="true"  prompt="请选择排序" ></div>
+                <input type="button" name="" id="" value="确定" onclick='setList()'/>
+			</tr>
+        </table>
+    </div>
+      <div class="conditionTop">
+          <table width="100%">
+            <tr class="conditionTop_tabs">
+                <div class="selectSuggestion" id="suggestion3" keepDefaultStyle="true" showList="true"  prompt="请选择对象" ></div>
+                <input type="button" name="" id="" value="确定" onclick='run()'/>
+            	</tr>
+		</table>
+	</div>
 
 
 	</div>
@@ -115,15 +75,20 @@
 </body>
 	<script>
 
-		var MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 		var color = Chart.helpers.color;
         config = {
             type: 'bar',
             data: {
-			    labels: MONTHS,
                 datasets: [{
-                    label: '美国',
+                    lables: "申报人数",
                     backgroundColor: color(window.chartColors.red).alpha(0.5).rgbString(),
+                    borderColor: window.chartColors.red,
+                    borderWidth: 2,
+                    data: []
+                },
+                {
+                    lables: "成功人数",
+                    backgroundColor: color(window.chartColors.blue).alpha(0.5).rgbString(),
                     borderColor: window.chartColors.red,
                     borderWidth: 1,
                     data: []
@@ -136,47 +101,93 @@
                 },
                 title: {
                     display: true,
-                    text: '国家/组织/人物-时间 情感正负概率柱状图'
+                    text: '申报和成功人数柱状图'
                 },
                 scales: {
                     xAxes: [{
                         display: true,
                         scaleLabel: {
                             display: true,
-                            labelString: '时间'
                         }
                     }],
                     yAxes: [{
                         display: true,
+                        scaleStartValue : 0,
                         scaleLabel: {
                             display: true,
-                            labelString: '情感正负概率'
+                            labelString: '人数'
                         }
                     }]
                 }
             }
         }
-        $.get(rooturl+'emotion_analyse_figure3',function(ret){
+        $.get(rooturl+'gp_college_declare?st=per',function(ret){
             testData.rows = ret;
             initComplete();
+             intubiao();
         })
-		window.onload = function() {
-            let temp = new Array(12);
-			testData.rows.forEach(function (i) {
-                if(temp[Number(i.time.slice(5,7))-1]==null)
-			        temp[Number(i.time.slice(5,7))-1]=i.emotional_plus_or_minus*i.probability;
-			    else
-			        temp[Number(i.time.slice(5,7))-1]=(temp[Number(i.time.slice(5,7))-1]+i.emotional_plus_or_minus*i.probability)/2;
-                console.log(i);
-            });
-			for(let i in temp){
-			    if(temp[i]==null)
-			        temp[i]=0;
+         function setList()
+        {
+             type=$('#suggestion2').attr("relText")
+            if(type=="申报人数")
+            {
+                type='declare'
             }
-            config.data.datasets[0].data = temp;
-			window.myBar = new Chart(document.getElementById('canvas').getContext('2d'), config);
+            else if(type=="成功人数")
+            {
+                type='successful'
+            }
+            else {type='per'}
+            $.get(rooturl+'gp_college_declare?st='+type,function(ret){
+            testData.rows = ret;
+            initComplete();
+             intubiao();
+        })
+        }
+          function run()
+        {
+            $.get(rooturl + 'emotion_analyse_figure3', function (ret) {
 
+            })
+            //ccont=$('#suggestion3').attr("relText")
+           // console.log(ccont)
+           // $.get(rooturl + 'emotion_analyse_figure3?duixiang='+ccont, function (ret) {
+           //     testData.rows = ret;
+           //     initComplete();
+           //     intubiao();
+          //  })
+        }
+        window.onload = function() {
+		    var selData1 = {"list":[{'value':1,"key":'申报人数'},{'value':2,"key":'成功人数'},{'value':3,"key":'成功率'}]}
+                $("#suggestion2").data("data", selData1)
+                //刷新下拉框
+                $("#suggestion2").render();
+            $.get(rooturl + 'Getlist', function (ret) {
+                var selData = {"list": ret}
+                console.log(selData)
+                $("#suggestion3").data("data", selData)
+                //刷新下拉框
+                $("#suggestion3").render();
+            })
+
+        }
+           function intubiao(){
+            var ctx = document.getElementById('canvas').getContext('2d');
+			var mychart = new Chart(ctx, config);
+             config.data.datasets[0].label="申报人数"
+             config.data.datasets[1].label="成功人数"
+            var lab=[];
+             console.log(testData.rows.length)
+            for(let i=0;i<testData.rows.length;i++){
+                console.log(testData.rows[i]['declare'])
+                lab[i]=testData.rows[i]["college"]
+                config.data.datasets[0].data[i]=testData.rows[i]['declare']
+                config.data.datasets[1].data[i]=testData.rows[i]['successful']
+            }
+            config.data.labels=lab;
+            mychart.update();
 		};
+
 
 		document.getElementById('randomizeData').addEventListener('click', function() {
 			var zero = Math.random() < 0.2 ? true : false;
@@ -328,52 +339,33 @@
 	         }); 
 		
 			 g = $("#maingrid").quiGrid({
-              columns: [{ display: '新闻编码', name: 'id', align: 'center',  width: "10%"},
-                         {
-						display: '新闻标题',
-						name: 'title',
+              columns: [{
+						display: '学院',
+						name: 'college',
 						align: 'center',
-						width: "20%",
-                        showTitle:true
+						width: "20%"
 					}, {
-						display: '新闻来源',
-						name: 'source',
+						display: '申报人数',
+						name: 'declare',
 						align: 'center',
-						width: "10%"
-                    }, {
-						display: '评论者',
-						name: 'emotional_express',
+						width: "20%"
+					}, {
+						display: '成功人数',
+						name: 'successful',
 						align: 'center',
-						width: "10%"
-					},{
-                        display: '执行者',
-                        name: 'emotional_event',
-                        align: 'center',
-                        width: "10%",
-                        showTitle:true
-                    }, {
-                        display: '新闻情感句',
-                        name: 'emotional_words',
-                        align: 'center',
-                        width: "20%",
-                        showTitle:true
-                    }, {
-                        display: '情感正负',
-                        name: 'emotional_plus_or_minus',
-                        align: 'center',
-                        width: "10%"
-                    }, {
-                        display: '情感概率',
-                        name: 'probability',
-                        align: 'center',
-                        width: "10%"
-                    }, { display: '操作', isAllowHide: false, align: 'left', width: 180,
-                        render: function (rowdata, rowindex, value, column){
-                        return '<div class="grid_opp_container">'
-                                   + '<span class="grid_opp_view" onclick="onView(' + rowdata.id + ')">查看详细内容</span>'
-                               + '</div>';
-                     }}
-                       ],
+						width: "20%"
+					} ,
+              {
+						display: '成功率',
+						name: 'per',
+						align: 'center',
+						width: "20%"
+					},{ display: '操作', isAllowHide: false, align: 'center', width: '20%',
+                       render: function (rowdata, rowindex, value, column){
+                       return '<div class="grid_opp_container">'
+                                  + '<span class="grid_opp_view" onclick=show(\''+ rowdata.college+'\')>查看专业</span>'
+                            + '</div>';
+                     }}],
 					data: testData,
 					pageSize: 10,
 					rownumbers: false,
@@ -390,6 +382,15 @@
                 } 
             });
 		}
+		function show(college)
+        {
+               var storage=window.localStorage;
+			    storage["college"]=college;
+                window.location='yq_62.html';
+			   // var storage=window.localStorage;
+			    //storage["sono"]=sono;
+        }
+
          function itemclick(item, i)
         {
             top.Toast("showNoticeToast", "菜单项："+item.text+"，点击行："+userName);

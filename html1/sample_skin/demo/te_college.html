@@ -1,0 +1,203 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title></title>
+<!--框架必需start-->
+<script type="text/javascript" src="../../libs/js/jquery.js"></script>
+<script type="text/javascript" src="../../libs/js/language/cn.js"></script>
+<script type="text/javascript" src="../../libs/js/framework.js"></script>
+        <script type='text/javascript' src='../../libs/js/form/selectSuggestion.js'></script>
+        <script type="text/javascript" src="../../js/cn.js"></script>
+    <script type="text/javascript" src="../../js/getdata.js"></script>
+<link href="../../libs/css/import_basic.css" rel="stylesheet" type="text/css"/>
+<link rel="stylesheet" type="text/css" id="skin" prePath="../../"/>
+<link rel="stylesheet" type="text/css" id="customSkin"/>
+<!--框架必需end-->
+<script src="../../libs/js/graphical/raphael.js" type="text/javascript"></script>
+<script src="../../libs/js/graphical/popup.js" type="text/javascript"></script>
+<script src="../../libs/js/graphical/chart-column.js" type="text/javascript"></script>
+<script src="../../libs/js/graphical/progress.js" type="text/javascript"></script>
+
+<!-- 日期选择框start -->
+<script type="text/javascript" src="../../libs/js/form/datePicker/WdatePicker.js"></script>
+<!-- 日期选择框end -->
+
+<!--数据表格start-->
+<script src="../../libs/js/table/quiGrid.js" type="text/javascript"></script>
+<!--数据表格end-->
+<script src="../../dist/Chart.min.js"></script>
+<script src="../../utils.js"></script>
+<style>
+	canvas{
+		-moz-user-select: none;
+		-webkit-user-select: none;
+		-ms-user-select: none;
+	}
+
+	</style>
+</head>
+
+<body>
+  <div class="page_content">
+   	<div id="container" style="width: 60%;">
+		<canvas id="canvas" width="1000" height="400" ></canvas>
+	</div>
+	</div>
+      <div class="conditionTop">
+		<table width="100%">
+			<tr class="conditionTop_tabs">
+                <div class="selectSuggestion" id="suggestion2" keepDefaultStyle="true" showList="true"  prompt="学期" ></div>
+                <input type="button" name="" id="" value="确定" onclick='setList()'/>
+			</tr>
+        </table>
+    </div>
+		<div id="maingrid"></div>
+</div>
+</body>
+	<script>
+        var semester='2019-2020春学期'
+		var color = Chart.helpers.color;
+        config = {
+            type: 'bar',
+            data: {
+                datasets: [{
+                    lables: "综合成绩",
+                    backgroundColor: color(window.chartColors.red).alpha(0.5).rgbString(),
+                    borderColor: window.chartColors.red,
+                    borderWidth: 2,
+                    data: []
+                }]
+            },
+            options: {
+                animation: {           // 这部分是数值显示的功能实现
+                     onComplete: function () {
+                         var chartInstance = this.chart,
+                             ctx = chartInstance.ctx;
+                         // 以下属于canvas的属性（font、fillStyle、textAlign...）
+                         ctx.font = Chart.helpers.fontString(Chart.defaults.global.defaultFontSize, Chart.defaults.global.defaultFontStyle, Chart.defaults.global.defaultFontFamily);
+                         ctx.fillStyle = "black";
+                         ctx.textAlign = 'center';
+                         ctx.textBaseline = 'bottom';
+                         this.data.datasets.forEach(function (dataset, i) {
+                             var meta = chartInstance.controller.getDatasetMeta(i);
+                             meta.data.forEach(function (bar, index) {
+                                 var data = dataset.data[index];
+                                 ctx.fillText(data, bar._model.x, bar._model.y - 5);
+                             });
+                         });
+                     }
+                 },
+                responsive: true,
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: '学院/综合成绩统计图'
+                },
+                scales: {
+                    xAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                        }
+                    }],
+                    yAxes: [{
+                        display: true,
+                          ticks: {
+                          suggestedMin: 85,
+                          suggestedMax: 90,
+                             stepSize: 1
+                        },
+                        scaleLabel: {
+                            display: true,
+                            labelString: '综合成绩'
+                        }
+                    }]
+                }
+            }
+        }
+        $.get(rooturl+'TE_college',function(ret){
+            testData.rows = ret;
+            console.log(testData)
+            initComplete();
+             intubiao();
+        })
+        function setList()
+        {
+            semester=$('#suggestion2').attr("relText")
+            $.get(rooturl+'TE_college?semester='+semester,function(ret){
+            testData.rows = ret;
+            console.log(testData)
+            initComplete();
+            intubiao();
+        })
+        }
+         window.onload = function() {
+		    var selData1 = {"list":[{'value':1,"key":'2015-2016春学期'},{'value':2,"key":'2015-2016秋学期'},{'value':3,"key":'2016-2017春学期'},{'value':4,"key":'2016-2017秋学期'},{'value':5,"key":'2017-2018春学期'},{'value':6,"key":'2017-2018秋学期'},{'value':7,"key":'2018-2019春学期'},{'value':8,"key":'2018-2019秋学期'},{'value':9,"key":'2019-2020春学期'},{'value':10,"key":'2019-2020秋学期'}]}
+                $("#suggestion2").data("data", selData1)
+                //刷新下拉框
+                $("#suggestion2").render();
+        }
+           function intubiao(){
+            $('#canvas').remove();
+	        $('#container').append('<canvas id="canvas"></canvas>');//清空画布
+            var ctx = document.getElementById('canvas').getContext('2d');
+			var mychart = new Chart(ctx, config);
+             config.data.datasets[0].label="综合成绩"
+            var lab=[];
+            for(let i=0;i<testData.rows.length;i++){
+                lab[i]=testData.rows[i]["college"]
+                config.data.datasets[0].data[i]=testData.rows[i]['ave_score']
+            }
+            config.data.labels=lab;
+            mychart.update();
+		}
+
+			var testData = {}
+//切换
+			//数据表格使用
+        var g;
+        var menu;
+        var userName;
+		function initComplete(){
+			 g = $("#maingrid").quiGrid({
+              columns: [{
+						display: '学院',
+						name: 'college',
+						align: 'center',
+						width: "20%"
+					}, {
+						display: '综合成绩',
+						name: 'ave_score',
+						align: 'center',
+						width: "20%"
+					},{ display: '操作', isAllowHide: false, align: 'center', width: '20%',
+                       render: function (rowdata, rowindex, value, column){
+                       return '<div class="grid_opp_container">'
+                                  + '<span class="grid_opp_view" onclick=show(\''+ rowdata.college+'\')>查看详情</span>'
+                            + '</div>';
+                     }}
+                  ],
+					data: testData,
+					pageSize: 10,
+					rownumbers: false,
+					checkbox: false,
+					percentWidthMode: true,
+					width: "100%",
+                    whenRClickToSelect:true,
+             });
+		}
+		function show(college)
+        {
+               var storage=window.localStorage;
+                storage["kind"]='college'
+			    storage["college"]=college;
+                storage["semester"]=semester
+                window.location='te_course.html';
+        }
+
+		</script>
+
+</html>

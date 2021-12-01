@@ -3,7 +3,7 @@
 
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-		<title>网站地址录入</title>
+		<title>重点事件录入</title>
 		<!--框架必需start-->
 		<script type="text/javascript" src="../../libs/js/jquery.js"></script>
 		<script type="text/javascript" src="../../libs/js/language/cn.js"></script>
@@ -32,7 +32,7 @@
 					<tr>
 						<td style="text-align: right;padding-right: 20px;">事件编号</td>
 						<td>
-							<input type="text" name="id" id="id" value="" style="width: 400px;" readonly="readonly"/>
+							<input type="text" name="id" id="id" value="" style="width: 400px;" />
 						</td>
 					</tr>
 
@@ -45,7 +45,7 @@
 					<tr>
 						<td style="text-align: right;padding-right: 20px;">事件别名</td>
 						<td>
-							<input type="text" name="agname" id="agname" value="" style="width: 400px;"/>
+							<input type="text" name="englishname" id="englishname" value="" style="width: 400px;"/>
 						</td>
 					</tr>
 
@@ -62,6 +62,9 @@
 			</div>
 		</div>
 		<script type="text/javascript">
+              $.get(rooturl+"event_id",function(ret){
+            			document.getElementById('id').value=ret['id']
+					});
 		</script>
 	</body>
 
