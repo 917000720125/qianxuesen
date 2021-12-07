@@ -48,7 +48,8 @@
       <div class="conditionTop">
           <table width="100%">
 			<tr class="conditionTop_tabs">
-                <Button id="select"  onclick="javascript:history.back(1);" >返回上一页</button>
+                <b style="font-size: 25px">班级总数：</b><b id="demo" style="font-size: 25px"></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<Button id="select"  onclick="javascript:history.back(1);" >返回上一页</button>
 			</tr>
         </table>
     </div>
@@ -58,6 +59,7 @@
 	<script>
 		var color = Chart.helpers.color;
         var myChart = echarts.init(document.getElementById('canvas'));
+        var num=0;
          window.onload = function() {
             $.get(rooturl + 'qianxuesen_bj_college1', function (ret) {
                 var lab=[]
@@ -66,7 +68,9 @@
                  for(let i=0;i<testData.rows.length;i++) {
                    lab[i] = testData.rows[i]["key"]
                    score[i] = testData.rows[i]['number']
+                     num=num+score[i]
                }
+                 document.getElementById("demo").innerHTML=num
             initComplete();
             intubiao(lab,score);
             })
@@ -74,7 +78,7 @@
         function intubiao(lab,score){
              myChart.setOption(option = {
         title: {
-            text: '2020钱学森学院开课统计'
+            text: '钱学森学院开课统计'
         },
     tooltip: {
         trigger: 'axis',

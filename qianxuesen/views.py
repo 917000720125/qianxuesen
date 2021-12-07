@@ -732,9 +732,9 @@ def qianxuesen_xuanke(request):
         st_major=data.st_major
         major_2=data.major_2
         st_grade=data.st_grade
-        total_credit=tostr(data.total_credit)
-        num_wx=tostr(data.num_wx)
-        num_dx=tostr(data.num_dx)
+        total_credit=tostr1(data.total_credit)
+        num_wx=tostr1(data.num_wx)
+        num_dx=tostr1(data.num_dx)
 
         # db.st_id=st_id
         # db.st_name=st_name
@@ -750,6 +750,12 @@ def qianxuesen_xuanke(request):
     return HttpResponse(json.dumps(res), content_type="application/json")
     # return HttpResponse("hello bug")
 
+#两位字符转换函数
+def tostr1(a):
+    if a<10:
+        return '0'+str(a)
+    if a>=10 and a<=100:
+        return str(a)
 
 #2021培养方案------学生选课详情------查看选课情况
 def qianxuesen_Getxuanke(request):
@@ -1803,32 +1809,166 @@ def qianxuesen_performance(request):
     return HttpResponse(json.dumps(res), content_type="application/json")
     # return HttpResponse('hello bug')
 
+def qianxuesen_bujige(request):
+    # datas=qianxuesen_chengji.objects.all()
+    # bujige=[]
+    # db=qianxuesen_bujige_num()
+    # for data in datas:
+    #     chengji=data.cl_performance.replace(" ","")
+    #     chengji=tofs(chengji)
+    #     if chengji<60:
+    #         i={"st_id":data.st_id,"st_name":data.st_name}
+    #         if i not in bujige:
+    #             bujige.append({"st_id":data.st_id,"st_name":data.st_name})
+    # num=[0 for i in range(0,len(bujige))]
+    # for data in datas:
+    #     chengji=tofs(data.cl_performance.strip())
+    #     if chengji<60:
+    #         i={"st_id":data.st_id,"st_name":data.st_name}
+    #         num[bujige.index(i)]=num[bujige.index(i)]+1
+    # for i in bujige:
+    #     datas=qianxuesen_chengji.objects.filter(st_id=i.get("st_id"))
+    #     for data in datas:
+    #
+    #         print(data.st_name+data.cl_performance)
+    # for i in range(0,len(bujige)):
+    #     db.st_id = bujige[i].get("st_id")
+    #     db.st_name = bujige[i].get("st_name")
+    #     db.bujige_num=num[i]
+    #     db.save()
+    d=request.GET
+    q=d.get("q")
+    left=d.get("left")
+    if left:
+        if left[0].isdigit():
+            left=int(left)
+    right=d.get("right")
+    if right:
+        if right[0].isdigit():
+            right=int(right)
+    res=[]
+    datas=qianxuesen_bujige_num.objects.all()
+    for data in datas:
+        st_id=data.st_id
+        st_name=data.st_name
+        bujige_num=tostr1(data.bujige_num)
+        infos=qianxuesen_qianxuesenst.objects.filter(st_id=st_id)
+        for info in infos:
+            st_major=info.st_major
+            major_2=info.major_2
+            st_grade=info.st_grade
+            st_class=info.st_class
+            st_school=info.st_school
+            if not q:
+                if not left and not right:
+                    res.append({"st_id":st_id,"st_name":st_name,"st_major":st_major,"major_2":major_2,"st_grade":st_grade,"st_class":st_class\
+                            ,"st_school":st_school,"bujige_num":bujige_num})
+                elif not left:
+                    if data.bujige_num<=right:
+                        res.append({"st_id": st_id, "st_name": st_name, "st_major": st_major, "major_2": major_2,
+                                    "st_grade": st_grade, "st_class": st_class \
+                                       , "st_school": st_school, "bujige_num": bujige_num})
+                elif not right:
+                    if data.bujige_num>=left:
+                        res.append({"st_id": st_id, "st_name": st_name, "st_major": st_major, "major_2": major_2,
+                                    "st_grade": st_grade, "st_class": st_class \
+                                       , "st_school": st_school, "bujige_num": bujige_num})
+                else:
+                    if data.bujige_num>=left and data.bujige_num<=right:
+                        res.append({"st_id": st_id, "st_name": st_name, "st_major": st_major, "major_2": major_2,
+                                    "st_grade": st_grade, "st_class": st_class \
+                                       , "st_school": st_school, "bujige_num": bujige_num})
+            else:
+                if q in st_id or q in st_name:
+                    if not left and not right:
+                        res.append({"st_id": st_id, "st_name": st_name, "st_major": st_major, "major_2": major_2,
+                                    "st_grade": st_grade, "st_class": st_class \
+                                       , "st_school": st_school, "bujige_num": bujige_num})
+                    elif not left:
+                        if data.bujige_num <= right:
+                            res.append({"st_id": st_id, "st_name": st_name, "st_major": st_major, "major_2": major_2,
+                                        "st_grade": st_grade, "st_class": st_class \
+                                           , "st_school": st_school, "bujige_num": bujige_num})
+                    elif not right:
+                        if data.bujige_num >= left:
+                            res.append({"st_id": st_id, "st_name": st_name, "st_major": st_major, "major_2": major_2,
+                                        "st_grade": st_grade, "st_class": st_class \
+                                           , "st_school": st_school, "bujige_num": bujige_num})
+                    else:
+                        if data.bujige_num >= left and data.bujige_num <= right:
+                            res.append({"st_id": st_id, "st_name": st_name, "st_major": st_major, "major_2": major_2,
+                                        "st_grade": st_grade, "st_class": st_class \
+                                           , "st_school": st_school, "bujige_num": bujige_num})
+    res.sort(key=lambda x:x['bujige_num'],reverse=True)
+    return HttpResponse(json.dumps(res),content_type="application/json")
+
+
+def tofs(a):
+    if a[0].isdigit():
+        return float(a)
+    elif a == "优秀":
+        return 90
+    elif a == "良好":
+        return 80
+    elif a == "中等":
+        return 70
+    elif a == "及格":
+        return 60
+    elif a == "不及格":
+        return 50
+    elif a == "合格":
+        return 50
+
+
+def qianxuesen_bujigeclass(request):
+    d=request.GET
+    st_id=d.get("st_id")
+    res=[]
+    datas=qianxuesen_chengji.objects.filter(st_id=st_id)
+    for data in datas:
+        chengji=data.cl_performance
+        chengji=chengji.replace(" ","")
+        chengji=tofs(chengji)
+        cl_name=data.cl_name.strip()
+        cl_credit=data.cl_credit.strip()
+        cl_performance=data.cl_performance.replace(" ","")
+        cl_type=data.cl_type.strip()
+        cl_attribute=data.cl_attribute.strip()
+        if chengji<60:
+            res.append({"cl_name":cl_name,"cl_credit":cl_credit,"cl_performance":cl_performance,"cl_type":cl_type,"cl_attribute":cl_attribute})
+        res.sort(key=lambda x:x['cl_credit'])
+    return HttpResponse(json.dumps(res),content_type="application/json")
+
+
+        
+def qianxuesen_exam(request):
+    # db=qianxuesen_examst()
+    # datas=qianxuesen_exam1.objects.all()
+    # for data in datas:
+    #     cl_name=data.cl_name
+    #     date=data.date
+    #     time=data.time
+    #     db.cl_name=cl_name
+    #     db.date=date
+    #     db.time=time
+    #     infos=qianxuesen_qianxuesen.objects.filter(cl_name__icontains=cl_name)
+    #     for info in infos:
+    #         db.st_id=info.st_id
+    #         db.st_name=info.st_name
+    #         db.st_class=info.st_class
+    #         db.save()
+    return HttpResponse("hello bug")
+    
 def qianxuesen_chengjibidui(request):
     bujige=[]
     res=[]
-    datas = qianxuesen_chengji.objects.all()
-    for data in datas:
-        cl_performance = data.cl_performance.strip()
-        fenshu=tofs(cl_performance)
-        if fenshu<60:
-            bujige.append({ 'cname': data.cl_name})
-    num=[0 for i in range(0,len(bujige))]
-    for i in bujige:
-        num[bujige.index(i)]= num[bujige.index(i)]+1
-    res.sort(key=lambda x: (x.get('number', 0)), reverse=True)
+    datas = qianxuesen_chengji.objects.values_list("cl_name","cl_credit")
+    result=Counter(datas).most_common()
+    for i in result:
+        cl_name=i[0][0]
+        cl_credit=i[0][1]
+        res.append({"cl_name":cl_name,"cl_credit":cl_credit})
+    res.sort(key=lambda x: (x.get('cl_credit', 0)), reverse=True)
     return HttpResponse(json.dumps(res), content_type="application/json")
-
-def tofs(a):
-    if a[0].isalpha():
-        return int(a)
-    elif a in "优秀":
-        return 90
-    elif a in "良好":
-        return 80
-    elif a in "中等":
-        return 70
-    elif a in "及格":
-        return 60
-    elif a in "不及格":
-        return 50
-
+    # print(i[0])
+    # return HttpResponse("HELLO BUG")

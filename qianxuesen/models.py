@@ -511,3 +511,24 @@ class qianxuesen_chengji(models.Model):
     cl_type = models.CharField(max_length=200)
     cl_attribute = models.CharField(max_length=200)
     year=models.CharField(max_length=200)
+
+class qianxuesen_exam1(models.Model):
+    id = models.IntegerField(primary_key=True)
+    cl_name = models.CharField(max_length=200)
+    date = models.CharField(max_length=200)
+    time = models.CharField(max_length=200)
+
+class qianxuesen_examst(models.Model):
+    id = models.IntegerField(primary_key=True)
+    cl_name = models.CharField(max_length=200)
+    date = models.CharField(max_length=200)
+    time = models.CharField(max_length=200)
+    st_id=models.CharField(max_length=200)
+    st_name=models.CharField(max_length=200)
+    st_class=models.CharField(max_length=200)
+
+class qianxuesen_bujige_num(models.Model):
+    id = models.IntegerField(primary_key=True)
+    st_id = models.CharField(max_length=200)
+    st_name = models.CharField(max_length=200)
+    bujige_num = models.IntegerField()

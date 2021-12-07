@@ -48,6 +48,7 @@
       <div class="conditionTop">
           <table width="100%">
 			<tr class="conditionTop_tabs">
+                数据总数：<b id="demo"></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                 <Button id="select"  onclick="javascript:history.back(1);" >返回上一页</button>
 			</tr>
         </table>
@@ -57,6 +58,7 @@
 </body>
 	<script>
 		var color = Chart.helpers.color;
+        var num=0;
         var myChart = echarts.init(document.getElementById('canvas'));
          window.onload = function() {
             $.get(rooturl + 'qianxuesen_fanganbidui', function (ret) {
@@ -64,9 +66,11 @@
                var score=[]
             testData.rows = ret;
                  for(let i=0;i<testData.rows.length;i++) {
+                     num=num+1
                    lab[i] = testData.rows[i]["cname"]
                    score[i] = testData.rows[i]['number']
                }
+                 document.getElementById("demo").innerHTML=num
             initComplete();
             intubiao(lab,score);
             })
@@ -136,7 +140,7 @@
                      }}
                   ],
 					data: testData,
-					pageSize: 10,
+					pageSize: 20,
 					rownumbers: false,
 					checkbox: false,
 					percentWidthMode: true,

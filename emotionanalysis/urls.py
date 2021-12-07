@@ -134,4 +134,8 @@ urlpatterns = [
                   path('qianxuesen_fanganbidui_st',qianxuesen_fanganbidui_st),#2021方案——方案比对-详情
                   path('qianxuesen_pf_st', qianxuesen_pf_st),  # 成绩名单
                   path('qianxuesen_performance', qianxuesen_performance),  # 成绩详情
+                  path('qianxuesen_bujige',qianxuesen_bujige),#不及格学生名单
+                  path('qianxuesen_bujigeclass',qianxuesen_bujigeclass), #不及格学生名单——不及格课程
+                  path('qianxuesen_chengjibidui',qianxuesen_chengjibidui),#
+
               ]
