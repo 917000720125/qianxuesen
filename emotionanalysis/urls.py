@@ -136,6 +136,12 @@ urlpatterns = [
                   path('qianxuesen_performance', qianxuesen_performance),  # 成绩详情
                   path('qianxuesen_bujige',qianxuesen_bujige),#不及格学生名单
                   path('qianxuesen_bujigeclass',qianxuesen_bujigeclass), #不及格学生名单——不及格课程
-                  path('qianxuesen_chengjibidui',qianxuesen_chengjibidui),#
-
+                  path('qianxuesen_chengjibidui',qianxuesen_chengjibidui),#学生成绩统计——课程成绩分析
+                  path('qianxuesen_chengjifenbu',qianxuesen_chengjifenbu),#学生成绩统计——课程成绩分析——课程成绩分布
+                  path('qianxuesen_qujianst',qianxuesen_qujianst),#学生成绩统计——课程成绩分析——课程成绩分布-人员详情
+                  path('qianxuesen_examst',qianxuesen_examst),#学生考试页面
+                  path('qianxuesen_exam', qianxuesen_exam),  # 学生考试页面
+                  path('qianxuesen_exam_db', qianxuesen_exam_db),  # 学生考试入库
+                  path('qianxuesen_gradesanalyse',qianxuesen_gradesanalyse), #学生成绩分析
+                  path('qianxuesen_gradesfenbu',qianxuesen_gradesfenbu),  # 学生成绩分析
               ]

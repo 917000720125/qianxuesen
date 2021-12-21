@@ -586,7 +586,7 @@ def qianxuesen_Getallst(request):
     cl_cid=d['cl_cid']
     cl_id=d['cl_id']
     res=[]
-    datas=qianxuesen_xuanke.objects.filter(cl_cid__contains=cl_cid).filter(cl_id__contains=cl_id)
+    datas=qianxuesen_xuanke1.objects.filter(cl_cid__contains=cl_cid).filter(cl_id__contains=cl_id)
     for data in datas:
         res.append({"st_name":data.st_name,"st_id":data.st_id,"st_school":data.st_school,"st_class":data.st_class})
     # res.append({"st_name": "a", "st_id": "a", "st_school":"a", "st_class": "a"})
@@ -1935,40 +1935,320 @@ def qianxuesen_bujigeclass(request):
         cl_type=data.cl_type.strip()
         cl_attribute=data.cl_attribute.strip()
         if chengji<60:
-            res.append({"cl_name":cl_name,"cl_credit":cl_credit,"cl_performance":cl_performance,"cl_type":cl_type,"cl_attribute":cl_attribute})
+            i={"cl_name":cl_name,"cl_credit":cl_credit,"cl_performance":cl_performance,"cl_type":cl_type,"cl_attribute":cl_attribute}
+            if i not in res:#去重
+                res.append({"cl_name":cl_name,"cl_credit":cl_credit,"cl_performance":cl_performance,"cl_type":cl_type,"cl_attribute":cl_attribute})
         res.sort(key=lambda x:x['cl_credit'])
     return HttpResponse(json.dumps(res),content_type="application/json")
 
 
         
-def qianxuesen_exam(request):
-    # db=qianxuesen_examst()
-    # datas=qianxuesen_exam1.objects.all()
-    # for data in datas:
-    #     cl_name=data.cl_name
-    #     date=data.date
-    #     time=data.time
-    #     db.cl_name=cl_name
-    #     db.date=date
-    #     db.time=time
-    #     infos=qianxuesen_qianxuesen.objects.filter(cl_name__icontains=cl_name)
-    #     for info in infos:
-    #         db.st_id=info.st_id
-    #         db.st_name=info.st_name
-    #         db.st_class=info.st_class
-    #         db.save()
+def qianxuesen_exam_db(request):
+    db=qianxuesen_examst1()
+    datas=qianxuesen_exam1.objects.all()
+    for data in datas:
+        cl_name=data.cl_name
+        date=data.date
+        time=data.time
+        db.cl_name=cl_name
+        db.date=date
+        db.time=time
+        infos=qianxuesen_qianxuesen.objects.filter(cl_name=cl_name)
+        for info in infos:
+            db.st_id=info.st_id
+            db.st_name=info.st_name
+            db.st_class=info.st_class
+            db.zhouci=18
+            db.save()
     return HttpResponse("hello bug")
     
 def qianxuesen_chengjibidui(request):
-    bujige=[]
+    d=request.GET
+    q=d.get("q")
     res=[]
     datas = qianxuesen_chengji.objects.values_list("cl_name","cl_credit")
     result=Counter(datas).most_common()
     for i in result:
         cl_name=i[0][0]
         cl_credit=i[0][1]
-        res.append({"cl_name":cl_name,"cl_credit":cl_credit})
+        if not q:
+            res.append({"cl_name":cl_name,"cl_credit":cl_credit})
+        else:
+            if q in cl_name:
+                res.append({"cl_name": cl_name, "cl_credit": cl_credit})
     res.sort(key=lambda x: (x.get('cl_credit', 0)), reverse=True)
-    return HttpResponse(json.dumps(res), content_type="application/json")
+    return HttpResponse(json.dumps(res),content_type="application/json")
     # print(i[0])
     # return HttpResponse("HELLO BUG")
+def qianxuesen_chengjifenbu(request):
+    d=request.GET
+    cl_name=d.get("cl_name")
+    q=d.get("q")
+    res=[]
+    num=[0 for i in range(0,5)]
+    datas=qianxuesen_chengji.objects.filter(cl_name=cl_name)
+    for data in datas:
+        if not q:
+            if tofs(data.cl_performance)>=90:
+                num[0]+=1
+            elif tofs(data.cl_performance)>=80 and tofs(data.cl_performance)<90:
+                num[1]+=1
+            elif tofs(data.cl_performance)>=70 and tofs(data.cl_performance)<80:
+                num[2]+=1
+            elif tofs(data.cl_performance)>=60 and tofs(data.cl_performance)<70:
+                num[3]+=1
+            elif tofs(data.cl_performance)>=0 and tofs(data.cl_performance)<60:
+                num[4]+=1
+        else:
+            if q in data.year:
+                if tofs(data.cl_performance) >= 90:
+                    num[0] += 1
+                elif tofs(data.cl_performance) >= 80 and tofs(data.cl_performance) < 90:
+                    num[1] += 1
+                elif tofs(data.cl_performance) >= 70 and tofs(data.cl_performance) < 80:
+                    num[2] += 1
+                elif tofs(data.cl_performance) >= 60 and tofs(data.cl_performance) < 70:
+                    num[3] += 1
+                elif tofs(data.cl_performance) >= 0 and tofs(data.cl_performance) < 60:
+                    num[4] += 1
+
+    res.append({"qujian":"90~100","num":num[0]})
+    res.append({"qujian": "80~90", "num": num[1]})
+    res.append({"qujian": "70~80", "num": num[2]})
+    res.append({"qujian": "60~70", "num": num[3]})
+    res.append({"qujian": "0~60", "num": num[4]})
+
+    return HttpResponse(json.dumps(res),content_type="application/json")
+    # return HttpResponse("hell bug")
+
+def qianxuesen_qujianst(request):
+    d=request.GET
+    res=[]
+    cl_name=d.get("cl_name")
+    qujian=d.get("qujian")
+    if qujian=="90~100":
+        left=90
+        right=100
+    elif qujian=="80~90":
+        left=80
+        right=89
+    elif qujian=="70~80":
+        left=70
+        right=79
+    elif qujian=="60~70":
+        left=60
+        right=69
+    elif qujian=="0~60":
+        left=0
+        right=59
+    year1=d.get("year1")
+
+    if year1=="all":
+        datas=qianxuesen_chengji.objects.filter(cl_name=cl_name)
+    else:
+        datas=qianxuesen_chengji.objects.filter(cl_name=cl_name).filter(year=year1)
+    state=0
+    for data in datas:
+        chengji=tofs(data.cl_performance)
+        st_id=data.st_id
+        st_name=data.st_name
+        infos = qianxuesen_qianxuesenst.objects.all()
+        if chengji >= left and chengji <= right :
+            for info in infos:
+                if st_id ==info.st_id:
+                    state=1
+            if state==1:
+                    st_major = info.st_major
+                    major_2 = info.major_2
+                    st_grade = info.st_grade
+                    st_class = info.st_class
+                    st_school = info.st_school
+            else:
+                st_major = "退院"
+                major_2 = "退院"
+                st_grade = "退院"
+                st_class = "退院"
+                st_school = "退院"
+            res.append({"st_name": st_name, "st_id": st_id, "st_school": st_school, "st_class": st_class,
+                         "st_major": st_major, "major_2": major_2, "st_grade": st_grade})
+    res.sort(key=lambda x:x["st_grade"])
+    return HttpResponse(json.dumps(res),content_type="application/json")
+
+def qianxuesen_examst(request):
+    d=request.GET
+    q=d.get("q")
+    zhouci=d.get("zhouci")
+    res=[]
+    map={
+        "17周":17,
+        "18周": 18,
+        "19周": 19,
+        "20周": 20,
+    }
+    if not zhouci:
+        zhouci=18
+    else:
+        zhouci=map.get(zhouci)
+    datas=qianxuesen_examst1.objects.filter(zhouci=zhouci).values_list("st_id","st_name","st_class")
+    result=Counter(datas).most_common()
+    for i in result:
+        st_id = i[0][0]
+        st_name= i[0][1]
+        st_class=i[0][2]
+        if not q:
+            res.append({"st_id":st_id,"st_name":st_name,"st_class":st_class,"zhouci":zhouci})
+        else:
+            if q in st_name:
+                res.append({"st_id": st_id, "st_name": st_name, "st_class": st_class,"zhouci":zhouci})
+    return HttpResponse(json.dumps(res),content_type="applicatin/json")
+
+def qianxuesen_exam(request):
+    d=request.GET
+    st_id=d.get("st_id")
+    res=[]
+    datas=qianxuesen_examst1.objects.filter(st_id=st_id).filter(zhouci=18)
+    for data in datas:
+        cl_name=data.cl_name
+        date=data.date
+        time=data.time
+        res.append({"cl_name": cl_name, "date": date, "time": time})
+    return HttpResponse(json.dumps(res), content_type="applicatin/json")
+
+def qianxuesen_gradesanalyse(request):
+    d=request.GET
+    res=[]
+    q=d.get("q")
+    grade=d.get("st_grade")
+    datas=qianxuesen_chengji.objects.exclude(cl_attribute="任选")
+    infos=qianxuesen_qianxuesenst.objects.exclude(st_grade="2021")
+    for info in infos:
+        st_id=info.st_id
+        st_name=info.st_name
+        st_school=info.st_school
+        st_class=info.st_class
+        st_major=info.st_major
+        major_2=info.major_2
+        st_grade=info.st_grade
+        num=0
+        grades=0
+        grades1=0
+        credit=0
+        for data in datas:
+            if data.st_id==st_id :
+                grades=grades+tofs(data.cl_performance)
+                num=num+1
+                grades1=grades1+float(data.cl_credit)*tofs(data.cl_performance)
+                credit+=float(data.cl_credit)
+            else:
+                continue
+        if not q and not grade:
+            if num==0:
+                grades_ave = 0  # 平均分
+                grades1_ave = 0  # 加权平均分
+            else:
+                grades_ave=format(grades/num ,'.2f')   #平均分
+                grades1_ave=format(grades1/credit,'.2f') #加权平均分
+            res.append({"st_name": st_name, "st_id": st_id, "st_school": st_school, "st_class": st_class,
+                             "st_major": st_major, "major_2": major_2, "st_grade": st_grade,"grades_ave":grades_ave,"grades1_ave":grades1_ave})
+        elif not q:
+            if grade==st_grade:
+                if num == 0:
+                    grades_ave = 0  # 平均分
+                    grades1_ave = 0  # 加权平均分
+                else:
+                    grades_ave = format(grades / num, '.2f')  # 平均分
+                    grades1_ave = format(grades1 / credit, '.2f')  # 加权平均分
+                res.append({"st_name": st_name, "st_id": st_id, "st_school": st_school, "st_class": st_class,
+                            "st_major": st_major, "major_2": major_2, "st_grade": st_grade, "grades_ave": grades_ave,
+                            "grades1_ave": grades1_ave})
+        elif not grade:
+            if q in st_id or q in st_name:
+                if num == 0:
+                    grades_ave = 0  # 平均分
+                    grades1_ave = 0  # 加权平均分
+                else:
+                    grades_ave = format(grades / num, '.2f')  # 平均分
+                    grades1_ave = format(grades1 / credit, '.2f')  # 加权平均分
+                res.append({"st_name": st_name, "st_id": st_id, "st_school": st_school, "st_class": st_class,
+                            "st_major": st_major, "major_2": major_2, "st_grade": st_grade, "grades_ave": grades_ave,
+                            "grades1_ave": grades1_ave})
+        else:
+            if (q in st_id or q in st_name) and grade==st_grade:
+                if num == 0:
+                    grades_ave = 0  # 平均分
+                    grades1_ave = 0  # 加权平均分
+                else:
+                    grades_ave = format(grades / num, '.2f')  # 平均分
+                    grades1_ave = format(grades1 / credit, '.2f')  # 加权平均分
+                res.append({"st_name": st_name, "st_id": st_id, "st_school": st_school, "st_class": st_class,
+                            "st_major": st_major, "major_2": major_2, "st_grade": st_grade, "grades_ave": grades_ave,
+                            "grades1_ave": grades1_ave})
+    res.sort(key=lambda x:x.get("grades1_ave"),reverse=True)
+    return HttpResponse(json.dumps(res),content_type="application/json")
+
+def qianxuesen_gradesfenbu(request):
+    d = request.GET
+    st_id = d.get("st_id")
+    q = d.get("q")
+    res = []
+    num = [0 for i in range(0, 5)]
+    datas = qianxuesen_chengji.objects.filter(st_id=st_id)
+    for data in datas:
+        if not q:
+            if tofs(data.cl_performance) >= 90:
+                num[0] += 1
+            elif tofs(data.cl_performance) >= 80 and tofs(data.cl_performance) < 90:
+                num[1] += 1
+            elif tofs(data.cl_performance) >= 70 and tofs(data.cl_performance) < 80:
+                num[2] += 1
+            elif tofs(data.cl_performance) >= 60 and tofs(data.cl_performance) < 70:
+                num[3] += 1
+            elif tofs(data.cl_performance) >= 0 and tofs(data.cl_performance) < 60:
+                num[4] += 1
+        else:
+            if q in data.year:
+                if tofs(data.cl_performance) >= 90:
+                    num[0] += 1
+                elif tofs(data.cl_performance) >= 80 and tofs(data.cl_performance) < 90:
+                    num[1] += 1
+                elif tofs(data.cl_performance) >= 70 and tofs(data.cl_performance) < 80:
+                    num[2] += 1
+                elif tofs(data.cl_performance) >= 60 and tofs(data.cl_performance) < 70:
+                    num[3] += 1
+                elif tofs(data.cl_performance) >= 0 and tofs(data.cl_performance) < 60:
+                    num[4] += 1
+
+    res.append({"qujian": "90~100", "num": num[0]})
+    res.append({"qujian": "80~90", "num": num[1]})
+    res.append({"qujian": "70~80", "num": num[2]})
+    res.append({"qujian": "60~70", "num": num[3]})
+    res.append({"qujian": "0~60", "num": num[4]})
+    num = 0
+    grades = 0
+    grades1 = 0
+    credit = 0
+    datas = qianxuesen_chengji.objects.filter(st_id=st_id)
+    for data in datas:
+        if not q:
+           if tofs(data.cl_performance) >= 60:
+                grades = grades + tofs(data.cl_performance)
+                num = num + 1
+                grades1 = grades1 + float(data.cl_credit) * tofs(data.cl_performance)
+                credit += float(data.cl_credit)
+        else:
+            if q in data.year:
+                if tofs(data.cl_performance) >= 60:
+                    grades = grades + tofs(data.cl_performance)
+                    num = num + 1
+                    grades1 = grades1 + float(data.cl_credit) * tofs(data.cl_performance)
+                    credit += float(data.cl_credit)
+        if num == 0:
+            grades_ave = 0  # 平均分
+            grades1_ave = 0  # 加权平均分
+        else:
+            grades_ave = format(grades / num, '.2f')  # 平均分
+            grades1_ave = format(grades1 / credit, '.2f')  # 加权平均分
+    #print(grades_ave, grades1_ave)
+    res.append({ "grades_ave": grades_ave,
+                "grades1_ave": grades1_ave})
+    return HttpResponse(json.dumps(res), content_type="application/json")

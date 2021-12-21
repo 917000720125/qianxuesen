@@ -42,23 +42,48 @@
 <body>
   <div class="page_content">
    	<div id="container" style="width: 60%;">
-		<canvas id="canvas" width="1000" height="400" ></canvas>
 	</div>
 	</div>
       <div class="conditionTop">
           <table width="100%">
 			<tr class="conditionTop_tabs">
-                <div class="selectSuggestion" id="suggestion1" keepDefaultStyle="true" showList="true"  prompt="类型" ></div>
-           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;     总人数：<b id="demo"></b> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              <div class="selectSuggestion" id="suggestion1" keepDefaultStyle="true" showList="true"  prompt="考试周次" ></div>
+        <!--          <div class="selectSuggestion" id="suggestion3" keepDefaultStyle="true" showList="true"  prompt="授课教师" ></div>
+                <div class="selectSuggestion" id="suggestion4" keepDefaultStyle="true" showList="true"  prompt="课序号" ></div>
+         --> <form method="get" action="/qianxuesen_allcourse">
+         <input type="search" name="q" placeholder="搜索" id="seacher" required>
+        <input type="button" value="搜索" class="" onclick="seach('qianxuesen_examst',document.getElementById('seacher').value)"/>
+
+     </form>
+                数据条数：<b id="demo"></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                 <Button id="select"  onclick="javascript:history.back(1);" >返回上一页</button>
+                <!--
+                <div class="selectSuggestion" id="suggestion1" keepDefaultStyle="true" showList="true"  prompt="总人数区间" ></div>
+                <div class="selectSuggestion" id="suggestion2" keepDefaultStyle="true" showList="true"  prompt="钱院人数区间" ></div>
+                -->
 			</tr>
         </table>
     </div>
 		<div id="maingrid"></div>
+
 </div>
 </body>
+
 	<script>
-        var num=0;
+        function seach(url1,text){
+
+             $.get(rooturl+url1+"?q="+text,function(ret){
+               //      gridData.rows=ret;
+                 var lab=[]
+               var score=[]
+            testData.rows = ret;
+                 for(let i=0;i<testData.rows.length;i++) {
+                   lab[i] = testData.rows[i]["key"]
+                   score[i] = testData.rows[i]['number']
+               }
+                     initComplete();
+               })
+            }
 		var color = Chart.helpers.color;
         config = {
             type: 'bar',
@@ -96,7 +121,7 @@
                 },
                 title: {
                     display: true,
-                    text: '2020钱学森学院录取统计'
+                    text: '论文成果统计'
                 },
                 scales: {
                     xAxes: [{
@@ -112,39 +137,65 @@
                         },
                         scaleLabel: {
                             display: true,
-                            labelString: '录取人数'
+                            labelString: '论文发表人数'
                         }
                     }]
                 }
             }
         }
-        var myChart = echarts.init(document.getElementById('canvas'));
          window.onload = function() {
               //var selData1 = {"list":[{'value':1,"key":'学院'},{'value':2,"key":'专业'},{'value':3,"key":'学生类别'},{'value':4,"key":'排名'},{'value':5,"key":'发表情况'},{'value':6,"key":'收录期刊'},{'value':7,"key":'刊出时间'}]}
-             var selData1 = {"list":[{'value':2,"key":'专业'},{'value':3,"key":'性别'},{'value':4,"key":'省份'}]}
+            //var selData1 = {"list":[{'value':1,"key":'17周'},{'value':2,"key":'18周'},{'value':3,"key":'19周'},{'value':4,"key":'20周'}]}
 
+          /*   cl_name="全选"
+             teacher="全选"
+             cl_id="全选"
+
+           */
+          //   cl_name='+cl_name+"&teacher="+teacher+"&cl_id="+cl_id
+             var num=0
+          $.get(rooturl + 'qianxuesen_examst?', function (ret) {
+                  var lab=[]
+               var score=[]
+            testData.rows = ret;
+                 for(let i=0;i<testData.rows.length;i++) {
+                     num=num+1
+                   lab[i] = testData.rows[i]["key"]
+                   score[i] = testData.rows[i]['number']
+               }
+                 document.getElementById("demo").innerHTML=num
+            initComplete();
+            })
+       /*      $.get(rooturl + 'qianxuesen_Getcourse', function (ret) {
+                var selData = {"list": ret}
+                $("#suggestion1").data("data", selData)
+                //刷新下拉框
+                $("#suggestion1").render();
+            })
+       */
+
+             var selData1 = {"list":[{'value':1,"key":'17周'},{'value':2,"key":'18周'},{'value':3,"key":'19周'},{'value':4,"key":'20周'}
+                                   ]}
              $("#suggestion1").data("data", selData1)
                 //刷新下拉框
              $("#suggestion1").render();
-             kind='专业'
-            $.get(rooturl + 'qianxuesen_admit?kind='+kind, function (ret) {
-                  var lab=[]
-               var score=[]
-            testData.rows = ret;
-                 for(let i=0;i<testData.rows.length;i++) {
-                     num=num+testData.rows[i]['number']
-                   lab[i] = testData.rows[i]["key"]
-                   score[i] = testData.rows[i]['number']
-               }
-            document.getElementById("demo").innerHTML=num;
-            initComplete();
-            intubiao(lab,score);
-            })
+         /*     var selData2 = {"list":[{'value':1,"key":'0~30'},{'value':2,"key":'30~50'},
+                                      {'value':3,"key":'50~80'},{'value':4,"key":'80~'},
+                                      {'value':5,"key":'全选'}]}
+             $("#suggestion2").data("data", selData2)
+                //刷新下拉框
+             $("#suggestion2").render();
+
+             */
+
         }
+
+        //------------------------------------------------------------------------------------------
+
         $("#suggestion1").bind("listSelect", function() {
-            kind=$('#suggestion1').attr("relText")
-            console.log(kind)
-            $.get(rooturl + 'qianxuesen_admit?kind='+kind, function (ret) {
+            zhouci=$('#suggestion1').attr("relText")
+
+            $.get(rooturl + 'qianxuesen_examst?zhouci='+zhouci, function (ret) {
                   var lab=[]
                var score=[]
             testData.rows = ret;
@@ -153,15 +204,15 @@
                    score[i] = testData.rows[i]['number']
                }
             initComplete();
-            intubiao(lab,score);
             })
         })
+
            function intubiao1(){
             $('#canvas').remove();
 	        $('#container').append('<canvas id="canvas"></canvas>');//清空画布
             var ctx = document.getElementById('canvas').getContext('2d');
 			var mychart = new Chart(ctx, config);
-             config.data.datasets[0].label="录取人数"
+             config.data.datasets[0].label="综合成绩"
             var lab=[];
             for(let i=0;i<testData.rows.length;i++){
                 lab[i]=testData.rows[i]["key"]
@@ -174,7 +225,7 @@
                console.log(lab)
             myChart.setOption(option = {
         title: {
-            text: '2020钱学森学院录取统计'
+            text: '详细评教成绩折线图'
         },
         tooltip: {
             trigger: 'axis'
@@ -204,7 +255,7 @@
             type: 'inside'
         }],
         series: {
-            name: '录取人数',
+            name: '详细评教成绩',
             type: 'bar',
             label: {
                 normal: {
@@ -226,24 +277,37 @@
 		function initComplete(){
 			 g = $("#maingrid").quiGrid({
               columns: [{
-						display: '名称',
-						name: 'key',
+						display: '学生学号',
+						name: 'st_id',
 						align: 'center',
 						width: "20%"
 					}, {
-						display: '录取人数',
-						name: 'number',
+						display: '学生姓名',
+						name: 'st_name',
 						align: 'center',
 						width: "20%"
-					},{ display: '操作', isAllowHide: false, align: 'center', width: '20%',
+					}, {
+						display: '学生班级',
+						name: 'st_class',
+						align: 'center',
+						width: "20%"
+					},{
+						display: '考试周次',
+						name: 'zhouci',
+						align: 'center',
+						width: "20%"
+					},
+
+                 { display: '操作', isAllowHide: false, align: 'center', width: '12%',
                        render: function (rowdata, rowindex, value, column){
                        return '<div class="grid_opp_container">'
-                                  + '<span class="grid_opp_view" onclick=show(\''+ rowdata.key+'\')>查看详情</span>'
+                                  + '<span class="grid_opp_view" onclick=show1(\''+ rowdata.st_id+'\',\''+ rowdata.st_name+'\')>考试安排</span>'
                             + '</div>';
-                     }}
+                     }},
+
                   ],
 					data: testData,
-					pageSize: 10,
+					pageSize: 50,
 					rownumbers: false,
 					checkbox: false,
 					percentWidthMode: true,
@@ -251,13 +315,15 @@
                     whenRClickToSelect:true,
              });
 		}
-		function show(parameter)
+		function show1(st_id,st_name)
         {
                var storage=window.localStorage;
-                storage["option"]=$('#suggestion1').attr("relText")
-                storage["parameter"]=parameter
-                window.location='qianxuesen_details.html';
+                storage["st_id"]=st_id
+                storage["st_name"]=st_name
+                window.location='qianxuesen_exam.html';
         }
+
+
 
 		</script>
 

@@ -78,7 +78,7 @@
         function intubiao(lab,score){
              myChart.setOption(option = {
         title: {
-            text: '钱学森学院开课统计'
+            text: '钱学森学院开课班级统计2021-2022-1'
         },
     tooltip: {
         trigger: 'axis',
@@ -86,7 +86,7 @@
             type: 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
         },
     }, legend: {
-        data: ['开课数']
+        data: ['班级数']
     }, xAxis: {
             type: 'category',
             data:lab,
@@ -98,7 +98,7 @@
             type: 'inside'
         }],
         series: {
-            name: '开课数',
+            name: '班级数',
             type: 'bar',
             label: {
                 show: true,

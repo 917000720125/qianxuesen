@@ -1,0 +1,381 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title></title>
+<!--框架必需start-->
+<script type="text/javascript" src="../../libs/js/jquery.js"></script>
+<script type="text/javascript" src="../../libs/js/language/cn.js"></script>
+<script type="text/javascript" src="../../libs/js/framework.js"></script>
+        <script type='text/javascript' src='../../libs/js/form/selectSuggestion.js'></script>
+        <script type="text/javascript" src="../../js/cn.js"></script>
+    <script type="text/javascript" src="../../js/getdata.js"></script>
+<link href="../../libs/css/import_basic.css" rel="stylesheet" type="text/css"/>
+<link rel="stylesheet" type="text/css" id="skin" prePath="../../"/>
+<link rel="stylesheet" type="text/css" id="customSkin"/>
+<!--框架必需end-->
+<script src="../../libs/js/graphical/raphael.js" type="text/javascript"></script>
+<script src="../../libs/js/graphical/popup.js" type="text/javascript"></script>
+<script src="../../libs/js/graphical/chart-column.js" type="text/javascript"></script>
+<script src="../../libs/js/graphical/progress.js" type="text/javascript"></script>
+
+<!-- 日期选择框start -->
+<script type="text/javascript" src="../../libs/js/form/datePicker/WdatePicker.js"></script>
+<!-- 日期选择框end -->
+
+<!--数据表格start-->
+<script src="../../libs/js/table/quiGrid.js" type="text/javascript"></script>
+<!--数据表格end-->
+<script src="../../dist/Chart.min.js"></script>
+<script src="../../utils.js"></script>
+<style>
+	canvas{
+		-moz-user-select: none;
+		-webkit-user-select: none;
+		-ms-user-select: none;
+	}
+
+	</style>
+</head>
+
+<body>
+  <div class="page_content">
+
+	<button id="randomizeData" style="display: none;">Randomize Data</button>
+	<button id="addDataset" style="display: none;">Add Dataset</button>
+	<button id="removeDataset" style="display: none;">Remove Dataset</button>
+	<button id="addData" style="display: none;">Add Data</button>
+	<button id="removeData" style="display: none;">Remove Data</button>
+      <div class="conditionTop">
+		<table width="100%">
+			<tr class="conditionTop_tabs">
+			</tr>
+        </table>
+    </div>
+      <div class="conditionTop">
+          <table width="100%">
+            <tr class="conditionTop_tabs">
+                <Button id="select"  onclick="javascript:location.replace(document.referrer);" >返回上一页</button>
+            	</tr>
+		</table>
+	</div>
+
+
+	</div>
+
+
+		<div id="maingrid"></div>
+</div>
+</body>
+	<script>
+           var storage=window.localStorage
+           var  cl_name =storage.cl_name;
+           var  qujian =storage.qujian;
+           var year1=storage.year1
+
+           $.get(rooturl+'qianxuesen_qujianst?cl_name='+cl_name+"&qujian="+qujian+"&year1="+year1,function(ret){
+            testData.rows = ret;
+            initComplete();
+             intubiao();
+        })
+
+		document.getElementById('randomizeData').addEventListener('click', function() {
+			var zero = Math.random() < 0.2 ? true : false;
+			barChartData.datasets.forEach(function(dataset) {
+				dataset.data = dataset.data.map(function() {
+					return zero ? 0.0 : randomScalingFactor();
+				});
+
+			});
+			window.myBar.update();
+		});
+
+		var colorNames = Object.keys(window.chartColors);
+		document.getElementById('addDataset').addEventListener('click', function() {
+			var colorName = colorNames[barChartData.datasets.length % colorNames.length];
+			var dsColor = window.chartColors[colorName];
+			var newDataset = {
+				label: 'Dataset ' + (barChartData.datasets.length + 1),
+				backgroundColor: color(dsColor).alpha(0.5).rgbString(),
+				borderColor: dsColor,
+				borderWidth: 1,
+				data: []
+			};
+
+			for (var index = 0; index < barChartData.labels.length; ++index) {
+				newDataset.data.push(randomScalingFactor());
+			}
+
+			barChartData.datasets.push(newDataset);
+			window.myBar.update();
+		});
+
+		document.getElementById('addData').addEventListener('click', function() {
+			if (barChartData.datasets.length > 0) {
+				var month = MONTHS[barChartData.labels.length % MONTHS.length];
+				barChartData.labels.push(month);
+
+				for (var index = 0; index < barChartData.datasets.length; ++index) {
+					// window.myBar.addData(randomScalingFactor(), index);
+					barChartData.datasets[index].data.push(randomScalingFactor());
+				}
+
+				window.myBar.update();
+			}
+		});
+
+		document.getElementById('removeDataset').addEventListener('click', function() {
+			barChartData.datasets.pop();
+			window.myBar.update();
+		});
+
+		document.getElementById('removeData').addEventListener('click', function() {
+			barChartData.labels.splice(-1, 1); // remove the label first
+
+			barChartData.datasets.forEach(function(dataset) {
+				dataset.data.pop();
+			});
+
+			window.myBar.update();
+		});
+
+
+
+
+
+
+			var testData = {
+
+			}
+//切换tab
+
+				$(".condition_tab").find("a").each(function(i) {
+					$(this).click(function() {
+						$(".condition_tab").find("a").removeClass("current");
+						$(this).addClass("current");
+						$(".condition_tab_content").hide();
+						$(".condition_tab_content").eq(i).show();
+
+						resetGridHeight()
+					})
+				})
+
+				$(".condition_tab_content").each(function(i) {
+
+					$(this).find("input:checkbox").each(function() {
+
+						//得到对应的选项容器
+						var $ul = $(".conditionContent").find("ul").eq(i);
+
+						//初始化遍历checkbox
+						if($(this).attr("checked")) {
+
+							//添加条件项
+							renderItem($(this), i, $ul);
+						}
+
+						//checkbox点击时
+						$(this).change(function() {
+							var instance = $(this);
+
+							//checkbox选中
+							if($(this).prop("checked")) {
+								//添加条件项
+								renderItem(instance, i, $ul);
+							}
+							//checkbox取消选中
+							else {
+								$ul.find("li").each(function() {
+									//找到与chekbox对应的条件项
+									if($(this).attr("id") == "item_" + instance.attr("id")) {
+										//移除条件项
+										removeItem($(this), $ul);
+
+									}
+								})
+							}
+						})
+
+					})
+				})
+
+
+			//数据表格使用
+        var g;
+        var menu;
+        var userName;
+		function initComplete(){
+			menu = $.rightClickMenu({ width: 120, items:
+	            [
+	            { text: '查看', click: itemclick , iconClass: 'icon_view', children:
+		            [
+		            { text: '弹窗查看', click: itemclick },
+		            { text: '导出文件', children: [{ text: 'Excel', click: itemclick }, { text: 'Word'}]
+		            }
+		            ] }
+	            ]
+	         });
+
+			 g = $("#maingrid").quiGrid({
+               columns: [ {
+						display: '学生姓名',
+						name: 'st_name',
+						align: 'center',
+						width: "10%"
+					}, {
+						display: '学生学号',
+						name: 'st_id',
+						align: 'center',
+						width: "10%"
+					}, {
+						display: '学生专业',
+						name: 'st_major',
+						align: 'center',
+						width: "10%"
+					}, {
+						display: '专业方向',
+						name: 'major_2',
+						align: 'center',
+						width: "10%"
+					}, {
+						display: '所属学院',
+						name: 'st_school',
+						align: 'center',
+						width: "10%"
+					},{
+						display: '所属班级',
+						name: 'st_class',
+						align: 'center',
+						width: "10%"
+					}, {
+						display: '学生年级',
+						name: 'st_grade',
+						align: 'center',
+						width: "10%"
+					}],
+					data: testData,
+					pageSize: 20,
+					rownumbers: false,
+					checkbox: false,
+					percentWidthMode: true,
+					height: '100%',
+					width: "100%",
+                 whenRClickToSelect:true,
+                onContextmenu : function (parm,e)
+                {
+                    userName = parm.data.name;
+                    menu.show({ top: e.pageY, left: e.pageX });
+                    return false;
+                }
+            });
+		}
+
+         function itemclick(item, i)
+        {
+            top.Toast("showNoticeToast", "菜单项："+item.text+"，点击行："+userName);
+        }
+			$(function() {
+
+
+
+            //初始化关键字文本框
+
+				var value3 = $("#keywords").val();
+
+				if(value3 != "") {
+					var type = "keywords";
+					var i = 4;
+					var $ul = $(".conditionContent").find("ul").eq(i);
+					renderItem2(type, value3, i, $ul);
+				}
+
+
+				$("#keywordsAdd").click(function() {
+					var value = $("#keywords").val();
+					if(value == "") {
+						alert("请填写关键字！");
+						return;
+					}
+					var type = "keywords";
+					var i = 4;
+					var $ul = $(".conditionContent").find("ul").eq(i);
+					renderItem2(type, value, i, $ul);
+				})
+
+			})
+
+			//添加条件项
+			function renderItem(instance, i, $ul) {
+				$(".conditionTop_items").show();
+
+				var $item = $('<li id="item_' + instance.attr("id") + '" class="item"><a>' + instance.val() + '</a></li>');
+				$ul.parent().parent().show();
+				$ul.show();
+				resetGridHeight()
+
+				$ul.append($item);
+				//点击条件项
+				$item.click(function() {
+					//移除条件项
+					removeItem($(this), $ul);
+                            //将对应的checkbox设为不选中
+                            $(".condition_tab_content").eq(i).find("input:checkbox").each(function() {
+                                                                                          if($(this).attr("id") == instance.attr("id")) {
+                                                                                          $(this).attr("checked", false);
+                                                                                          }
+                                                                                          })
+
+				})
+			}
+
+			//移除条件项
+			function removeItem(instance, $ul) {
+				instance.remove();
+
+				//如果没有条件项了，隐藏整行
+				if($ul.find("li").length == 0) {
+					$ul.parent().parent().hide();
+					$ul.hide();
+					resetGridHeight()
+						//如果所有行都隐藏了，隐藏整体
+					var mainShow = 0;
+					$(".conditionTop_items").find("ul").each(function() {
+						if($(this)[0].style.display == "block") {
+							mainShow = 1;
+						}
+					})
+					if(mainShow == 0) {
+						$(".conditionTop_items").hide();
+						resetGridHeight()
+					}
+				}
+			}
+
+			function renderItem2(type, value, i, $ul) {
+				$(".conditionTop_items").show();
+
+				var $item = $('<li id="item_' + type + '" class="item"><a>' + value + '</a></li>');
+				$ul.parent().parent().show();
+				$ul.show();
+				resetGridHeight()
+
+				$ul.append($item);
+				//点击条件项
+				$item.click(function() {
+					//移除条件项
+					removeItem($(this), $ul);
+
+
+					if(type == "keywords") {
+						$("#keywords").val("");
+					}
+				})
+			}
+
+			function resetGridHeight() {
+				setTimeout(function() {
+					g.resetHeight();
+				}, 500)
+			}
+		</script>
+</html>

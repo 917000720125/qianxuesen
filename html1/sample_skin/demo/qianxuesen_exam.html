@@ -42,15 +42,15 @@
 <body>
   <div class="page_content">
    	<div id="container" style="width: 60%;">
-		<canvas id="canvas" width="1000" height="400" ></canvas>
 	</div>
 	</div>
       <div class="conditionTop">
           <table width="100%">
 			<tr class="conditionTop_tabs">
-                 <b style="font-size: 25px">班级总数：</b><b id="demo" style="font-size: 25px"></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                <Button id="select"  onclick="javascript:history.back(1);" >返回上一页</button>
+                数据总数：<b id="demo"></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+                学生姓名：<h id="demo1"></h>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                 <Button id="select"  onclick="javascript:history.back(1);" >返回上一页</button>
 			</tr>
         </table>
     </div>
@@ -59,27 +59,30 @@
 </body>
 	<script>
 		var color = Chart.helpers.color;
-        var myChart = echarts.init(document.getElementById('canvas'));
-          var num=0;
+        var num=0;
+         var storage=window.localStorage;
+           var  st_id =storage.st_id;
+           var st_name=storage.st_name;
+           document.getElementById("demo1").innerHTML=st_name
          window.onload = function() {
-            $.get(rooturl + 'qianxuesen_bj_college', function (ret) {
+            $.get(rooturl + 'qianxuesen_exam?st_id='+st_id, function (ret) {
                 var lab=[]
                var score=[]
             testData.rows = ret;
                  for(let i=0;i<testData.rows.length;i++) {
-                   lab[i] = testData.rows[i]["key"]
+                     num=num+1
+                   lab[i] = testData.rows[i]["cname"]
                    score[i] = testData.rows[i]['number']
-                     num=num+score[i]
                }
                  document.getElementById("demo").innerHTML=num
             initComplete();
-            intubiao(lab,score);
+          //  intubiao(lab,score);
             })
         }
         function intubiao(lab,score){
              myChart.setOption(option = {
         title: {
-            text: '2020钱学森学院开课班级统计'
+            text: '2021-2022-1学生未选课程统计'
         },
     tooltip: {
         trigger: 'axis',
@@ -87,7 +90,7 @@
             type: 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
         },
     }, legend: {
-        data: ['班级数']
+        data: ['人数']
     }, xAxis: {
             type: 'category',
             data:lab,
@@ -99,7 +102,7 @@
             type: 'inside'
         }],
         series: {
-            name: '班级数',
+            name: '开课数',
             type: 'bar',
             label: {
                 show: true,
@@ -119,24 +122,24 @@
 		function initComplete(){
 			 g = $("#maingrid").quiGrid({
               columns: [{
-						display: '学院',
-						name: 'key',
+						display: '课程名',
+						name: 'cl_name',
 						align: 'center',
 						width: "20%"
 					}, {
-						display: '班级数',
-						name: 'number',
+						display: '考试日期',
+						name: 'date',
 						align: 'center',
 						width: "20%"
-					},{ display: '操作', isAllowHide: false, align: 'center', width: '20%',
-                       render: function (rowdata, rowindex, value, column){
-                       return '<div class="grid_opp_container">'
-                                  + '<span class="grid_opp_view" onclick=show(\''+ rowdata.key+'\')>查看详情</span>'
-                            + '</div>';
-                     }}
+					},{
+						display: '开始时间',
+						name: 'time',
+						align: 'center',
+						width: "20%"
+					}
                   ],
 					data: testData,
-					pageSize: 10,
+					pageSize: 20,
 					rownumbers: false,
 					checkbox: false,
 					percentWidthMode: true,
@@ -147,8 +150,8 @@
 		function show(parameter)
         {
                var storage=window.localStorage;
-                storage["parameter"]=parameter
-                window.location='qianxuesen_banji1.html';
+                storage["cl_cid"]=parameter
+                window.location='qianxuesen_fanganbidui_st.html';
         }
 
 		</script>

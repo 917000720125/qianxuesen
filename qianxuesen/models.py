@@ -53,7 +53,7 @@ class qianxuesen_trainingplan(models.Model):#培养计划
     college=models.CharField(max_length=255)  # 开课单位
     credit=models.FloatField()  # 学分
 
-class qianxuesen_xuanke(models.Model):#全校选课大表
+class qianxuesen_xuanke1(models.Model):#全校选课大表
     id = models.IntegerField(primary_key=True)
     st_id=models.CharField(max_length=20)   #学生学号
     st_name=models.CharField(max_length=20) #学生姓名
@@ -518,9 +518,10 @@ class qianxuesen_exam1(models.Model):
     date = models.CharField(max_length=200)
     time = models.CharField(max_length=200)
 
-class qianxuesen_examst(models.Model):
+class qianxuesen_examst1(models.Model):
     id = models.IntegerField(primary_key=True)
     cl_name = models.CharField(max_length=200)
+    zhouci=models.CharField(max_length=200)
     date = models.CharField(max_length=200)
     time = models.CharField(max_length=200)
     st_id=models.CharField(max_length=200)

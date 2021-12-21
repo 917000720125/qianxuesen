@@ -42,23 +42,64 @@
 <body>
   <div class="page_content">
    	<div id="container" style="width: 60%;">
-		<canvas id="canvas" width="1000" height="400" ></canvas>
+        <canvas id="canvas" width="1000" height="600" ></canvas>
 	</div>
 	</div>
       <div class="conditionTop">
-          <table width="100%">
+          <table width="50%">
 			<tr class="conditionTop_tabs">
-                <div class="selectSuggestion" id="suggestion1" keepDefaultStyle="true" showList="true"  prompt="类型" ></div>
-           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;     总人数：<b id="demo"></b> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+                 <tr>
+    <input type="button" value="2018-2019-1" class="" onclick="schoolyear('2018-2019-1','qianxuesen_gradesfenbu')"/>
+    <input type="button" value="2018-2019-2" class="" onclick="schoolyear('2018-2019-2','qianxuesen_gradesfenbu')"/>
+    <input type="button" value="2019-2020-1" class="" onclick="schoolyear('2019-2020-1','qianxuesen_gradesfenbu')"/>
+    <input type="button" value="2019-2020-2" class="" onclick="schoolyear('2019-2020-2','qianxuesen_gradesfenbu')"/>
+    <input type="button" value="2020-2021-1" class="" onclick="schoolyear('2020-2021-1','qianxuesen_gradesfenbu')"/>
+    <input type="button" value="2020-2021-2" class="" onclick="schoolyear('2020-2021-2','qianxuesen_gradesfenbu')"/>
+     </tr>
                 <Button id="select"  onclick="javascript:history.back(1);" >返回上一页</button>
+
+                <h>学生：</h><h id="demo1"></h>&nbsp;&nbsp;
+              <tr style="width: 5px"> <td style="width: 5px">平均分：  <h id="demo3"></h></td>
+                  <td style="width: 5px">加权平均分:<h id="demo4"></h></td>
+              </tr>
 			</tr>
         </table>
     </div>
-		<div id="maingrid"></div>
+ <!--		<div id="maingrid"></div>  -->
+
 </div>
 </body>
+
 	<script>
-        var num=0;
+        var color = Chart.helpers.color;
+        var myChart = echarts.init(document.getElementById('canvas'));
+        var year1="all";
+        function schoolyear(year,url1){
+             $.get(rooturl+url1+"?q="+year+"&st_id="+st_id,function(ret){
+               //      gridData.rows=ret;
+               year1=year;
+               var lab=[]
+               var score=[]
+            testData.rows = ret;
+                 for(let i=0;i<5;i++) {
+                   lab[i] = testData.rows[i]["qujian"]
+                   score[i] = testData.rows[i]['num']
+               }
+                 grades_ave = testData.rows[5]["grades_ave"]
+                 grades1_ave = testData.rows[5]["grades1_ave"]
+                 document.getElementById("demo3").innerHTML=grades_ave
+                 document.getElementById("demo4").innerHTML=grades1_ave
+                 delete testData.rows[5]
+                //     initComplete();
+                    intubiao(lab,score);
+               })
+        }
+          var storage=window.localStorage;
+           var  st_id =storage.st_id;
+           var  st_name = storage.st_name;
+           document.getElementById("demo1").innerHTML=st_name
+
 		var color = Chart.helpers.color;
         config = {
             type: 'bar',
@@ -96,7 +137,7 @@
                 },
                 title: {
                     display: true,
-                    text: '2020钱学森学院录取统计'
+                    text: '论文成果统计'
                 },
                 scales: {
                     xAxes: [{
@@ -112,138 +153,111 @@
                         },
                         scaleLabel: {
                             display: true,
-                            labelString: '录取人数'
+                            labelString: '论文发表人数'
                         }
                     }]
                 }
             }
         }
-        var myChart = echarts.init(document.getElementById('canvas'));
          window.onload = function() {
-              //var selData1 = {"list":[{'value':1,"key":'学院'},{'value':2,"key":'专业'},{'value':3,"key":'学生类别'},{'value':4,"key":'排名'},{'value':5,"key":'发表情况'},{'value':6,"key":'收录期刊'},{'value':7,"key":'刊出时间'}]}
-             var selData1 = {"list":[{'value':2,"key":'专业'},{'value':3,"key":'性别'},{'value':4,"key":'省份'}]}
+             $.get(rooturl + 'qianxuesen_gradesfenbu?st_id=' + st_id, function (ret) {
+                 var lab = []
+                 var score = []
+                 testData.rows = ret;
+                 for (let i = 0; i < 5; i++) {
+                     lab[i] = testData.rows[i]["qujian"]
+                     score[i] = testData.rows[i]['num']
+                 }
+                 grades_ave = testData.rows[5]["grades_ave"]
+                 grades1_ave = testData.rows[5]["grades1_ave"]
+                 document.getElementById("demo3").innerHTML=grades_ave
+                 document.getElementById("demo4").innerHTML=grades1_ave
 
-             $("#suggestion1").data("data", selData1)
-                //刷新下拉框
-             $("#suggestion1").render();
-             kind='专业'
-            $.get(rooturl + 'qianxuesen_admit?kind='+kind, function (ret) {
-                  var lab=[]
-               var score=[]
-            testData.rows = ret;
-                 for(let i=0;i<testData.rows.length;i++) {
-                     num=num+testData.rows[i]['number']
-                   lab[i] = testData.rows[i]["key"]
-                   score[i] = testData.rows[i]['number']
-               }
-            document.getElementById("demo").innerHTML=num;
-            initComplete();
-            intubiao(lab,score);
-            })
-        }
-        $("#suggestion1").bind("listSelect", function() {
-            kind=$('#suggestion1').attr("relText")
-            console.log(kind)
-            $.get(rooturl + 'qianxuesen_admit?kind='+kind, function (ret) {
-                  var lab=[]
-               var score=[]
-            testData.rows = ret;
-                 for(let i=0;i<testData.rows.length;i++) {
-                   lab[i] = testData.rows[i]["key"]
-                   score[i] = testData.rows[i]['number']
-               }
-            initComplete();
-            intubiao(lab,score);
-            })
-        })
-           function intubiao1(){
-            $('#canvas').remove();
-	        $('#container').append('<canvas id="canvas"></canvas>');//清空画布
-            var ctx = document.getElementById('canvas').getContext('2d');
-			var mychart = new Chart(ctx, config);
-             config.data.datasets[0].label="录取人数"
-            var lab=[];
-            for(let i=0;i<testData.rows.length;i++){
-                lab[i]=testData.rows[i]["key"]
-                config.data.datasets[0].data[i]=testData.rows[i]['number']
-            }
-            config.data.labels=lab;
-            mychart.update();
-		}
+                // initComplete();
+                 intubiao(lab, score);
+             })
+         }
         function intubiao(lab,score){
-               console.log(lab)
-            myChart.setOption(option = {
+             myChart.setOption(option = {
         title: {
-            text: '2020钱学森学院录取统计'
+            text: '学生成绩分布统计'
         },
-        tooltip: {
-            trigger: 'axis'
+    tooltip: {
+        trigger: 'axis',
+        axisPointer: {            // 坐标轴指示器，坐标轴触发有效
+            type: 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
         },
-        xAxis: {
+    }, legend: {
+        data: ['课程数']
+    }, xAxis: {
+            type: 'category',
             data:lab,
-           splitLine: {
-                show: true
-            }
         },
         yAxis: {
-            splitLine: {
-                show: true
-            }
-        },
-        toolbox: {
-            left: 'center',
-            feature: {
-                dataZoom: {
-                    yAxisIndex: 'none'
-                },
-                restore: {},
-                saveAsImage: {}
-            }
+               type: 'value'
         },
         dataZoom: [ {
             type: 'inside'
         }],
         series: {
-            name: '录取人数',
+            name: '课程数',
             type: 'bar',
             label: {
-                normal: {
-                    show: true,
-                    position: 'top'
-                }
+                show: true,
+                position: 'top'
             },
             data: score
         }
        })
-        }
+    }
+
+           function intubiao1(){
+            $('#canvas').remove();
+	        $('#container').append('<canvas id="canvas"></canvas>');//清空画布
+            var ctx = document.getElementById('canvas').getContext('2d');
+			var mychart = new Chart(ctx, config);
+             config.data.datasets[0].label="综合成绩"
+            var lab=[];
+            for(let i=0;i<5;i++){
+                lab[i]=testData.rows[i]["qujian"]
+                config.data.datasets[0].data[i]=testData.rows[i]['num']
+            }
+            config.data.labels=lab;
+            mychart.update();
+		}
+
 
 			var testData = {}
 //切换
-			//数据表格使用
+
+	/*		//数据表格使用
         var g;
         var menu;
         var userName;
 		function initComplete(){
 			 g = $("#maingrid").quiGrid({
               columns: [{
-						display: '名称',
-						name: 'key',
+						display: '成绩区间',
+						name: 'qujian',
 						align: 'center',
 						width: "20%"
 					}, {
-						display: '录取人数',
-						name: 'number',
+						display: '课程数',
+						name: 'num',
 						align: 'center',
 						width: "20%"
-					},{ display: '操作', isAllowHide: false, align: 'center', width: '20%',
+					},
+
+                 { display: '操作', isAllowHide: false, align: 'center', width: '20%',
                        render: function (rowdata, rowindex, value, column){
                        return '<div class="grid_opp_container">'
-                                  + '<span class="grid_opp_view" onclick=show(\''+ rowdata.key+'\')>查看详情</span>'
+                                  + '<span class="grid_opp_view" onclick=show1(cl_name,\''+rowdata.qujian+'\',year1)>人员详情</span>'
                             + '</div>';
-                     }}
+                     }},
+
                   ],
 					data: testData,
-					pageSize: 10,
+					pageSize: 30,
 					rownumbers: false,
 					checkbox: false,
 					percentWidthMode: true,
@@ -251,14 +265,19 @@
                     whenRClickToSelect:true,
              });
 		}
-		function show(parameter)
+		function show1(cl_name,qujian,year1)
         {
                var storage=window.localStorage;
-                storage["option"]=$('#suggestion1').attr("relText")
-                storage["parameter"]=parameter
-                window.location='qianxuesen_details.html';
+                storage["cl_name"]=cl_name
+                storage["qujian"]=qujian
+                storage["year1"]=year1
+                window.location='qianxuesen_qujianst.html';
         }
 
+
+
+	 */
 		</script>
 
 </html>
+
